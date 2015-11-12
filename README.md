@@ -1,4 +1,4 @@
-# OneDrive Android SDK
+# OneDrive SDK for Android
 
 [ ![Download](https://api.bintray.com/packages/onedrive/Maven/onedrive-sdk-android/images/download.svg) ](https://bintray.com/onedrive/Maven/onedrive-sdk-android/_latestVersion)
 [![Build Status](https://travis-ci.org/OneDrive/onedrive-sdk-android.svg?branch=master)](https://travis-ci.org/OneDrive/onedrive-sdk-android)
