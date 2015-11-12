@@ -46,8 +46,8 @@ task checkstyle(type: Checkstyle) {
             '**/extensions/**',
             '**/core/OneDriveErrorCodes.java',
             '**/http/OneDrive*Error*.java',
-            '**/authenication/ServiceInfo.java',
-            '**/authenication/DiscoveryServiceResponse.java'
+            '**/authentication/ServiceInfo.java',
+            '**/authentication/DiscoveryServiceResponse.java'
     ignoreFailures = false
     classpath = files()
 }
