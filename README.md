@@ -148,10 +148,13 @@ For known issues, see [issues](https://github.com/OneDrive/onedrive-sdk-android/
 
 The OneDrive SDK is open for contribution. Please read how to contribute to this project [here](docs/contributions.md).
 
-## 7. License
+## 7. Supported Android Versions
+The OneDrive SDK for Android library is supported at runtime for [Android API revision 15](http://source.android.com/source/build-numbers.html) and greater. To build the sdk you need to install Android API revision 23 or greater.
+
+## 8. License
 
 [License](LICENSE)
 
-## 8. Third Party Notices
+## 9. Third Party Notices
 
 [Third Party Notices](THIRD PARTY NOTICES)
