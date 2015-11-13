@@ -40,7 +40,7 @@ The OneDrive SDK for Android comes with Authenticator objects that have already 
 Note that your _msa-client-id_ should look like `0000000000000000` and _adal-client-id_ should look like `00000000-0000-0000-0000-000000000000`.
 
 ```java
-final MSAAuthenticator msaAuthenticator = new MSAAuthenticator {
+final MSAAuthenticator msaAuthenticator = new MSAAuthenticator() {
     @Override
     public String getClientId() {
         return "<msa-client-id>";
@@ -52,7 +52,7 @@ final MSAAuthenticator msaAuthenticator = new MSAAuthenticator {
     }
 }
 
-final ADALAuthenticator adalAuthenticator = new ADALAuthenticator {
+final ADALAuthenticator adalAuthenticator = new ADALAuthenticator() {
     @Override
     public String getClientId() {
         return "<adal-client-id>";
@@ -93,7 +93,7 @@ To retrieve a user's drive:
 oneDriveClient
     .getDrive()
     .buildRequest()
-    .get(new ICallback<Drive> {
+    .get(new ICallback<Drive>() {
   @Override
   public void success(final Drive result) {
     final String msg = "Found Drive " + result.id;
@@ -114,7 +114,7 @@ oneDriveClient
     .getDrive()
     .getRoot()
     .buildRequest()
-    .get(new ICallback<Item> {
+    .get(new ICallback<Item>() {
   @Override
   public void success(final Item result) {
     final String msg = "Found Root " + result.id;
