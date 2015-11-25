@@ -166,14 +166,12 @@ public abstract class MSAAuthenticator implements IAuthenticator {
             public void onAuthComplete(final LiveStatus liveStatus,
                                        final LiveConnectSession liveConnectSession,
                                        final Object o) {
-                if (liveStatus != LiveStatus.CONNECTED) {
-                    error.set(new ClientAuthenticatorException("Was unable to connect to the MSA login session",
-                                                               OneDriveErrorCodes.AuthenticationFailure));
-                    mLogger.logError(error.get().getMessage(), error.get());
+                if (liveStatus == LiveStatus.NOT_CONNECTED) {
+                    mLogger.logDebug("Received invalid login failure from silent authentication with MSA, ignoring.");
+                } else {
+                    mLogger.logDebug("Successful interactive login");
+                    waiter.signal();
                 }
-
-                mLogger.logDebug("Successful login");
-                waiter.signal();
             }
 
             @Override
@@ -256,13 +254,13 @@ public abstract class MSAAuthenticator implements IAuthenticator {
             public void onAuthComplete(final LiveStatus liveStatus,
                                        final LiveConnectSession liveConnectSession,
                                        final Object o) {
-                if (liveStatus != LiveStatus.CONNECTED) {
-                    error.set(new ClientAuthenticatorException("Was unable to connect to the MSA login session",
-                                                               OneDriveErrorCodes.AuthenticationFailure));
+                if (liveStatus == LiveStatus.NOT_CONNECTED) {
+                    error.set(new ClientAuthenticatorException("Failed silent login, interactive login required",
+                            OneDriveErrorCodes.AuthenticationFailure));
                     mLogger.logError(error.get().getMessage(), error.get());
+                } else {
+                    mLogger.logDebug("Successful silent login");
                 }
-
-                mLogger.logDebug("Successful silent login");
                 loginSilentWaiter.signal();
             }
 
