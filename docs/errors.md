@@ -2,7 +2,7 @@
 
 Errors in the OneDrive SDK for Android behave just like errors returned from the service. You can read more about them [here](https://github.com/OneDrive/onedrive-api-docs/blob/master/misc/errors.md).
 
-Anytime you make a request against the service there is the potential for an error. You will see that all requests to the service can return an error. The errors are returned as `ClientExcepion`, with possible subclasses `ClientAuthenticationException` and `OneDriveServiceException` which your application will want to handle.
+Anytime you make a request against the service there is the potential for an error. You will see that all requests to the service can return an error. The errors are returned as `ClientException`, with possible subclasses `ClientAuthenticationException` and `OneDriveServiceException` which your application will want to handle.
 
 ## Checking the error
 
