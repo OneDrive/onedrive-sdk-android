@@ -117,3 +117,52 @@ oneDriveClient.getDrive().getItems("1234").buildRequest().expand("thumbnails").g
     }
 });
 ```
+
+## Additional request options
+
+If you need to include more specific behavior during a request, there are `Option` objects that you can add when calling `buildRequest`.  See a detailed list of query parameters in the [OneDrive API optional query parameters](https://dev.onedrive.com/odata/optional-query-parameters.htm) documentation.
+
+Here's an example of how to add an additional query parameter to sort the returned collection page results by size:
+
+```java
+final List<Option> options = new LinkedList<Option>();
+options.add(new QueryOption("orderby", "size"));
+oneDriveClient
+    .getDrive()
+    .getRoot()
+    .getChildren()
+    .buildRequest(options)
+    .get(new ICallback<IItemCollectionPage>() {
+        @Override
+        public void success(final IItemCollectionPage iItemCollectionPage) {
+            // Handle success of this page and its getNextPage() results will have their contents sorted by size
+        }
+        @Override
+        public void failure(final ClientException ex) {
+            // Handle failure
+        }
+    });
+```
+
+ Here's how to add an additional HTTP header to request only a specific set of bytes from a file (partial download):
+ 
+ ```java
+final String myItemId = "1234"; // The id of the item to download
+final List<Option> options = new LinkedList<Option>();
+options.add(new HeaderOption("Range", "bytes=0-128"));
+oneDriveClient()
+    .getDrive()
+    .getItems(myItemId)
+    .getContent()
+    .buildRequest(options)
+    .get(new ICallback<InputStream>() {
+        @Override
+        public void success(final InputStream inputStream) {
+            // Handle success of this partial range of the file
+        }
+        @Override
+        public void failure(final ClientException ex) {
+            // Handle failure
+        }
+    });
+ ```
