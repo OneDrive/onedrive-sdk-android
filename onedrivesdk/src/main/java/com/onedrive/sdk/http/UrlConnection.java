@@ -22,6 +22,8 @@
 
 package com.onedrive.sdk.http;
 
+import android.os.Build;
+
 import com.onedrive.sdk.options.HeaderOption;
 
 import java.io.IOException;
@@ -29,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -58,7 +61,17 @@ public class UrlConnection implements IConnection {
             mConnection.addRequestProperty(header.getName(), header.getValue());
         }
 
-        mConnection.setRequestMethod(request.getHttpMethod().toString());
+        if (request.getHttpMethod() == HttpMethod.PATCH
+                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            if (request.getRequestUrl().getAuthority().toLowerCase(Locale.ROOT).startsWith("api.onedrive.com")) {
+                mConnection.setRequestMethod(HttpMethod.POST.toString());
+                mConnection.addRequestProperty("X-HTTP-Method-Override", "PATCH");
+            } else {
+                mConnection.setRequestMethod(HttpMethod.PUT.toString());
+            }
+        } else {
+            mConnection.setRequestMethod(request.getHttpMethod().toString());
+        }
     }
 
     @Override
