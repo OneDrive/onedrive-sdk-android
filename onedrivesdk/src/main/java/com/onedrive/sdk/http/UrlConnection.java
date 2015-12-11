@@ -22,16 +22,14 @@
 
 package com.onedrive.sdk.http;
 
-import android.os.Build;
-
 import com.onedrive.sdk.options.HeaderOption;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -61,16 +59,13 @@ public class UrlConnection implements IConnection {
             mConnection.addRequestProperty(header.getName(), header.getValue());
         }
 
-        if (request.getHttpMethod() == HttpMethod.PATCH
-                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            if (request.getRequestUrl().getAuthority().toLowerCase(Locale.ROOT).startsWith("api.onedrive.com")) {
-                mConnection.setRequestMethod(HttpMethod.POST.toString());
-                mConnection.addRequestProperty("X-HTTP-Method-Override", "PATCH");
-            } else {
-                mConnection.setRequestMethod(HttpMethod.PUT.toString());
-            }
-        } else {
+        try {
             mConnection.setRequestMethod(request.getHttpMethod().toString());
+        } catch (final ProtocolException ignored ){
+            // Some HTTP verbs are not supported by older http implementations, use method override as an alternative
+            mConnection.setRequestMethod(HttpMethod.POST.toString());
+            mConnection.addRequestProperty("X-HTTP-Method-Override", request.getHttpMethod().toString());
+            mConnection.addRequestProperty("X-HTTP-Method", request.getHttpMethod().toString());
         }
     }
 
