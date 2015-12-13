@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.ProtocolException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +59,14 @@ public class UrlConnection implements IConnection {
             mConnection.addRequestProperty(header.getName(), header.getValue());
         }
 
-        mConnection.setRequestMethod(request.getHttpMethod().toString());
+        try {
+            mConnection.setRequestMethod(request.getHttpMethod().toString());
+        } catch (final ProtocolException ignored ){
+            // Some HTTP verbs are not supported by older http implementations, use method override as an alternative
+            mConnection.setRequestMethod(HttpMethod.POST.toString());
+            mConnection.addRequestProperty("X-HTTP-Method-Override", request.getHttpMethod().toString());
+            mConnection.addRequestProperty("X-HTTP-Method", request.getHttpMethod().toString());
+        }
     }
 
     @Override
