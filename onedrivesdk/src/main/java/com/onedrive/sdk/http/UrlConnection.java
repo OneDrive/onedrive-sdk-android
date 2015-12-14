@@ -61,7 +61,7 @@ public class UrlConnection implements IConnection {
 
         try {
             mConnection.setRequestMethod(request.getHttpMethod().toString());
-        } catch (final ProtocolException ignored ){
+        } catch (final ProtocolException ignored) {
             // Some HTTP verbs are not supported by older http implementations, use method override as an alternative
             mConnection.setRequestMethod(HttpMethod.POST.toString());
             mConnection.addRequestProperty("X-HTTP-Method-Override", request.getHttpMethod().toString());
