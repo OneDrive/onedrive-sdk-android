@@ -63,12 +63,4 @@ public class BaseShareRequestBuilder extends BaseRequestBuilder implements IBase
     public IShareRequest buildRequest(final List<Option> options) {
         return new ShareRequest(getRequestUrl(), getClient(), options);
     }
-
-    public IItemCollectionRequestBuilder getItems() {
-        return new ItemCollectionRequestBuilder(getRequestUrlWithAdditionalSegment("items"), getClient(), null);
-    }
-
-    public IItemRequestBuilder getItems(final String id) {
-        return new ItemRequestBuilder(getRequestUrlWithAdditionalSegment("items") + "/" + id, getClient(), null);
-    }
 }
