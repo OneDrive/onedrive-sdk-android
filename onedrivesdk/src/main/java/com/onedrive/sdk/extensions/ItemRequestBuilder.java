@@ -32,19 +32,19 @@ import com.onedrive.sdk.serializer.*;
 
 import java.util.*;
 
-// This file is available for extending. Afterwards please submit a pull request.
+// This file is available for extending, afterwards please submit a pull request.
 
 /**
- * The class for the item request builder.
+ * The class for the Item Request Builder.
  */
 public class ItemRequestBuilder extends BaseItemRequestBuilder implements IItemRequestBuilder {
 
     /**
-     * The request builder for the item.
+     * The request builder for the Item
      *
-     * @param requestUrl The request url.
-     * @param client The service client.
-     * @param options The options for this request.
+     * @param requestUrl The request url
+     * @param client The service client
+     * @param options The options for this request
      */
     public ItemRequestBuilder(final String requestUrl, final IOneDriveClient client, final List<Option> options) {
         super(requestUrl, client, options);

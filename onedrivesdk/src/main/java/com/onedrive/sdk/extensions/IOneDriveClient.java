@@ -32,10 +32,10 @@ import com.onedrive.sdk.serializer.*;
 
 import java.util.*;
 
-// This file is available for extending. Afterwards please submit a pull request.
+// This file is available for extending, afterwards please submit a pull request.
 
 /**
- * Represents the interface for the OneDrive client.
+ * The interface for the One Drive Client.
  */
 public interface IOneDriveClient extends IBaseOneDriveClient {
 
