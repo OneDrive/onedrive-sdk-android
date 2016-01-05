@@ -83,8 +83,4 @@ public class BaseDriveRequestBuilder extends BaseRequestBuilder implements IBase
     public IRecentRequestBuilder getRecent() {
         return new RecentRequestBuilder(getRequestUrlWithAdditionalSegment("view.recent"), getClient(), null);
     }
-
-    public ISharedWithMeRequestBuilder getSharedWithMe() {
-        return new SharedWithMeRequestBuilder(getRequestUrlWithAdditionalSegment("view.sharedWithMe"), getClient(), null);
-    }
 }

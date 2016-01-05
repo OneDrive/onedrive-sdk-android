@@ -24,9 +24,13 @@ package com.onedrive.sdk.extensions;
 
 import com.onedrive.sdk.concurrency.*;
 import com.onedrive.sdk.core.*;
+import com.onedrive.sdk.extensions.*;
 import com.onedrive.sdk.http.*;
 import com.onedrive.sdk.generated.*;
+import com.onedrive.sdk.options.*;
 import com.onedrive.sdk.serializer.*;
+
+import java.util.*;
 
 import com.onedrive.sdk.authentication.*;
 import com.onedrive.sdk.logger.*;

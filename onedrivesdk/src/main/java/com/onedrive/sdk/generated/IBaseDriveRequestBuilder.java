@@ -58,6 +58,4 @@ public interface IBaseDriveRequestBuilder extends IRequestBuilder {
     IAllPhotosRequestBuilder getAllPhotos();
 
     IRecentRequestBuilder getRecent();
-
-    ISharedWithMeRequestBuilder getSharedWithMe();
 }

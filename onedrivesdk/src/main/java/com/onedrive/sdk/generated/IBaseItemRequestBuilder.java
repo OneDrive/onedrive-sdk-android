@@ -53,10 +53,6 @@ public interface IBaseItemRequestBuilder extends IRequestBuilder {
 
     IPermissionRequestBuilder getPermissions(final String id);
 
-    IItemCollectionRequestBuilder getVersions();
-
-    IItemRequestBuilder getVersions(final String id);
-
     IItemCollectionRequestBuilder getChildren();
 
     IItemRequestBuilder getChildren(final String id);

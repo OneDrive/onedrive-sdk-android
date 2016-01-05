@@ -72,14 +72,6 @@ public class BaseItemRequestBuilder extends BaseRequestBuilder implements IBaseI
         return new PermissionRequestBuilder(getRequestUrlWithAdditionalSegment("permissions") + "/" + id, getClient(), null);
     }
 
-    public IItemCollectionRequestBuilder getVersions() {
-        return new ItemCollectionRequestBuilder(getRequestUrlWithAdditionalSegment("versions"), getClient(), null);
-    }
-
-    public IItemRequestBuilder getVersions(final String id) {
-        return new ItemRequestBuilder(getRequestUrlWithAdditionalSegment("versions") + "/" + id, getClient(), null);
-    }
-
     public IItemCollectionRequestBuilder getChildren() {
         return new ItemCollectionRequestBuilder(getRequestUrlWithAdditionalSegment("children"), getClient(), null);
     }
