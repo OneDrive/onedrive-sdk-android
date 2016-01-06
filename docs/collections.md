@@ -134,5 +134,5 @@ oneDriveClient
     .getItems(parentId)
     .getChildren()
     .buildRequest()
-    .create(newItem, callback);
+    .create(folderToCreate, callback);
 ```
