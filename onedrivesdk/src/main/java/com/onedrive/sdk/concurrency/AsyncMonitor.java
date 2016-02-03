@@ -142,28 +142,32 @@ public class AsyncMonitor<T> {
             @Override
             public void run() {
                 AsyncOperationStatus status = null;
-                do {
-                    if (status  != null) {
-                        try {
-                            Thread.sleep(millisBetweenPoll);
-                        } catch (final InterruptedException ignored) {
-                            mClient.getLogger().logDebug("InterruptedException ignored");
+                try {
+                    do {
+                        if (status  != null) {
+                            try {
+                                Thread.sleep(millisBetweenPoll);
+                            } catch (final InterruptedException ignored) {
+                                mClient.getLogger().logDebug("InterruptedException ignored");
+                            }
                         }
+                        status = getStatus();
+                        if (status.percentageComplete != null) {
+                            mClient.getExecutors().performOnForeground(status.percentageComplete.intValue(),
+                                                                       progressMax,
+                                                                       callback);
+                        }
+                    } while (!(isCompleted(status) || isFailed(status)));
+                    mClient.getLogger().logDebug("Polling has completed, got final status: " + status.status);
+                    if (isFailed(status)) {
+                        mClient.getExecutors().performOnForeground(new AsyncOperationException(status),
+                                                                      callback);
                     }
-                    status = getStatus();
-                    if (status.percentageComplete != null) {
-                        mClient.getExecutors().performOnForeground(status.percentageComplete.intValue(),
-                                                                   progressMax,
-                                                                   callback);
-                    }
-                } while (!(isCompleted(status) || isFailed(status)));
-                mClient.getLogger().logDebug("Polling has completed, got final status: " + status.status);
-                if (isFailed(status)) {
-                    mClient.getExecutors().performOnForeground(new AsyncOperationException(status),
-                                                                  callback);
-                }
 
-                mClient.getExecutors().performOnForeground(getResult(), callback);
+                    mClient.getExecutors().performOnForeground(getResult(), callback);
+                } catch (final ClientException e) {
+                    mClient.getExecutors().performOnForeground(e, callback);
+                }
             }
         });
     }
