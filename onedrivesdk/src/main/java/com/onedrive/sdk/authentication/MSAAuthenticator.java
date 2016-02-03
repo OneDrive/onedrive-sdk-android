@@ -287,7 +287,8 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
         mLogger.logDebug("Starting login silent");
 
-        if (mUserId.get() == null) {
+        if (getSharedPreferences().getInt(VERSION_CODE_KEY, 0) >= 10112
+                && mUserId.get() == null) {
             mLogger.logDebug("No login information found for silent authentication");
             return null;
         }
