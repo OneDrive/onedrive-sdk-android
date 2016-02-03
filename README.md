@@ -7,7 +7,7 @@ Integrate the [OneDrive API](https://dev.onedrive.com/README.htm) into your Andr
 
 ## 1. Installation
 ### 1.1 Install AAR via Gradle
-Add the maven central repository to your projects build.gradle file then add a compile dependency for com.onedrive.sdk:onedrive-sdk-android:1.1.0
+Add the maven central repository to your projects build.gradle file then add a compile dependency for com.onedrive.sdk:onedrive-sdk-android:1.1.1
 
 ```gradle
 repository {
@@ -16,14 +16,14 @@ repository {
 
 dependency {
     // Include the sdk as a dependency
-    compile('com.onedrive.sdk:onedrive-sdk-android:1.1.0')
+    compile('com.onedrive.sdk:onedrive-sdk-android:1.1.1')
 
     // Include the gson dependency
     compile 'com.google.code.gson:gson:2.3.1'
 
     // Include supported authentication methods for your application
     compile 'com.microsoft.services.msa:msa-auth:0.8.4'
-    compile 'com.microsoft.aad:adal:1.1.7'
+    compile 'com.microsoft.aad:adal:1.1.11'
 }
 ```
 
