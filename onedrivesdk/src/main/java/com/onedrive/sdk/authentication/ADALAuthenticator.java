@@ -97,9 +97,9 @@ public abstract class ADALAuthenticator implements IAuthenticator {
     private static final String SERVICE_INFO_KEY = "serviceInfo";
 
     /**
-     * The key for the version
+     * The key for the version code
      */
-    private static final String VERSION_KEY = "version";
+    private static final String VERSION_CODE_KEY = "versionCode";
 
     /**
      * Determines if the authority should be validated.
@@ -318,7 +318,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
                 .putString(RESOURCE_URL_KEY, mResourceUrl.get())
                 .putString(USER_ID_KEY, mUserId.get())
                 .putString(SERVICE_INFO_KEY, serviceInfoAsString)
-                .putString(VERSION_KEY, BuildConfig.VERSION_NAME)
+                .putInt(VERSION_CODE_KEY, BuildConfig.VERSION_CODE)
                 .apply();
 
         mLogger.logDebug("Successfully retrieved login information");
@@ -486,7 +486,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
         final SharedPreferences prefs = getSharedPreferences();
         prefs.edit()
              .clear()
-             .putString(VERSION_KEY, BuildConfig.VERSION_NAME)
+             .putInt(VERSION_CODE_KEY, BuildConfig.VERSION_CODE)
              .apply();
         mUserId.set(null);
         mResourceUrl.set(null);

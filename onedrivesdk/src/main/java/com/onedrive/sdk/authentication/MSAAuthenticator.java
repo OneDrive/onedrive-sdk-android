@@ -67,9 +67,9 @@ public abstract class MSAAuthenticator implements IAuthenticator {
     private static final String USER_ID_KEY = "userId";
 
     /**
-     * The key for the version
+     * The key for the version code
      */
-    public static final String VERSION_KEY = "Version";
+    public static final String VERSION_CODE_KEY = "versionCode";
 
     /**
      * The default user id
@@ -240,7 +240,7 @@ public abstract class MSAAuthenticator implements IAuthenticator {
         final SharedPreferences prefs = getSharedPreferences();
         prefs.edit()
              .putString(USER_ID_KEY, mUserId.get())
-             .putString(VERSION_KEY, BuildConfig.VERSION_NAME)
+             .putInt(VERSION_CODE_KEY, BuildConfig.VERSION_CODE)
              .apply();
 
         return getAccountInfo();
@@ -407,7 +407,7 @@ public abstract class MSAAuthenticator implements IAuthenticator {
         final SharedPreferences prefs = getSharedPreferences();
         prefs.edit()
              .clear()
-             .putString(VERSION_KEY, BuildConfig.VERSION_NAME)
+             .putInt(VERSION_CODE_KEY, BuildConfig.VERSION_CODE)
              .apply();
         mUserId.set(null);
 
