@@ -366,6 +366,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
         }
 
         if (mResourceUrl.get() == null) {
+            mLogger.logDebug("No login information found for silent authentication");
             return null;
         }
 
