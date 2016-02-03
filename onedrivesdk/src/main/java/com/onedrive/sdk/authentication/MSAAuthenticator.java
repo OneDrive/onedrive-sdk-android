@@ -23,6 +23,8 @@
 package com.onedrive.sdk.authentication;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.microsoft.services.msa.LiveAuthClient;
 import com.microsoft.services.msa.LiveAuthException;
@@ -54,6 +56,21 @@ public abstract class MSAAuthenticator implements IAuthenticator {
     private static final String SIGN_IN_CANCELLED_MESSAGE = "The user cancelled the login operation.";
 
     /**
+     * The preferences for this authenticator.
+     */
+    private static final String MSA_AUTHENTICATOR_PREFS = "MSAAuthenticatorPrefs";
+
+    /**
+     * The key for the user id.
+     */
+    private static final String USER_ID_KEY = "userId";
+
+    /**
+     * The default user id
+     */
+    private static final String DEFAULT_USER_ID = "@@defaultUser";
+
+    /**
      * The executors.
      */
     private IExecutors mExecutors;
@@ -72,6 +89,11 @@ public abstract class MSAAuthenticator implements IAuthenticator {
      * The logger.
      */
     private ILogger mLogger;
+
+    /**
+     * The active user id.
+     */
+    private AtomicReference<String> mUserId;
 
     /**
      * The client id for this authenticator.
@@ -113,6 +135,9 @@ public abstract class MSAAuthenticator implements IAuthenticator {
         mLogger = logger;
         mInitialized = true;
         mAuthClient = new LiveAuthClient(activity, getClientId(), Arrays.asList(getScopes()));
+
+        final SharedPreferences prefs = getSharedPreferences();
+        mUserId.set(prefs.getString(USER_ID_KEY, null));
     }
 
     /**
@@ -197,10 +222,19 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
         mLogger.logDebug("Waiting for MSA callback");
         waiter.waitForSignal();
+
         final ClientException exception = error.get();
         if (exception != null) {
             throw exception;
         }
+
+        final String userId = emailAddressHint != null ? emailAddressHint : DEFAULT_USER_ID;
+        mUserId.set(userId);
+
+        final SharedPreferences prefs = getSharedPreferences();
+        prefs.edit()
+             .putString(USER_ID_KEY, mUserId.get())
+             .apply();
 
         return getAccountInfo();
     }
@@ -242,6 +276,10 @@ public abstract class MSAAuthenticator implements IAuthenticator {
     public synchronized IAccountInfo loginSilent() throws ClientException {
         if (!mInitialized) {
             throw new IllegalStateException("init must be called");
+        }
+
+        if (mUserId.get() == null) {
+            mLogger.logDebug("No login information found for silent authentication");
         }
 
         mLogger.logDebug("Starting login silent");
@@ -357,6 +395,12 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
         mLogger.logDebug("Waiting for logout to complete");
         logoutWaiter.waitForSignal();
+
+        mLogger.logDebug("Clearing all MSA Authenticator shared preferences");
+        final SharedPreferences prefs = getSharedPreferences();
+        prefs.edit().clear().apply();
+        mUserId.set(null);
+
         final ClientException exception = error.get();
         if (exception != null) {
             throw exception;
@@ -376,4 +420,13 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
         return new MSAAccountInfo(this, session, mLogger);
     }
+
+    /**
+     * Gets the shared preferences for this authenticator.
+     * @return The shared preferences.
+     */
+    private SharedPreferences getSharedPreferences() {
+        return mActivity.getSharedPreferences(MSA_AUTHENTICATOR_PREFS, Context.MODE_PRIVATE);
+    }
+
 }
