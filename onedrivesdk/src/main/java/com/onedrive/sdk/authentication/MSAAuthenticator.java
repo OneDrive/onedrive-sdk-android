@@ -234,7 +234,13 @@ public abstract class MSAAuthenticator implements IAuthenticator {
             throw exception;
         }
 
-        final String userId = emailAddressHint != null ? emailAddressHint : DEFAULT_USER_ID;
+        final String userId;
+        if (emailAddressHint != null) {
+            userId = emailAddressHint;
+        } else {
+            userId = DEFAULT_USER_ID;
+        }
+
         mUserId.set(userId);
 
         final SharedPreferences prefs = getSharedPreferences();
@@ -287,7 +293,8 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
         mLogger.logDebug("Starting login silent");
 
-        if (getSharedPreferences().getInt(VERSION_CODE_KEY, 0) >= 10112
+        final int userIdStoredMinVersion = 10112;
+        if (getSharedPreferences().getInt(VERSION_CODE_KEY, 0) >= userIdStoredMinVersion
                 && mUserId.get() == null) {
             mLogger.logDebug("No login information found for silent authentication");
             return null;
