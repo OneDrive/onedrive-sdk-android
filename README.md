@@ -23,7 +23,7 @@ dependency {
 
     // Include supported authentication methods for your application
     compile 'com.microsoft.services.msa:msa-auth:0.8.4'
-    compile 'com.microsoft.aad:adal:1.1.7'
+    compile 'com.microsoft.aad:adal:1.1.11'
 }
 ```
 
