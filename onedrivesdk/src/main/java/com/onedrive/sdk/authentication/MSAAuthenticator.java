@@ -71,6 +71,11 @@ public abstract class MSAAuthenticator implements IAuthenticator {
     private static final String DEFAULT_USER_ID = "@@defaultUser";
 
     /**
+     * The active user id.
+     */
+    private final AtomicReference<String> mUserId = new AtomicReference<>();
+
+    /**
      * The executors.
      */
     private IExecutors mExecutors;
@@ -89,11 +94,6 @@ public abstract class MSAAuthenticator implements IAuthenticator {
      * The logger.
      */
     private ILogger mLogger;
-
-    /**
-     * The active user id.
-     */
-    private AtomicReference<String> mUserId;
 
     /**
      * The client id for this authenticator.
