@@ -1,6 +1,14 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
+def getVersionCode() {
+    return mavenMajorVersion.toInteger() * 10000 + mavenMinorVersion.toInteger() * 100 + mavenPatchVersion.toInteger()
+}
+
+def getVersionName() {
+    return "${mavenMajorVersion}.${mavenMinorVersion}.${mavenPatchVersion}"
+}
+
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
         tasks.withType(Javadoc) {
@@ -16,8 +24,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode Integer.parseInt(project.mavenVersionCode)
-        versionName project.mavenVersion
+        versionCode getVersionCode()
+        versionName getVersionName()
     }
 
     lintOptions {
@@ -79,7 +87,7 @@ uploadArchives {
         pom {
            setGroupId project.mavenGroupId
            setArtifactId project.mavenArtifactId
-           setVersion project.mavenVersion
+           setVersion getVersionName()
         }
         repository (url: project.mavenRepoUrl) {
             authentication(
