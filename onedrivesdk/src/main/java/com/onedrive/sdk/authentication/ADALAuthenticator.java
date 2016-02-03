@@ -31,6 +31,7 @@ import android.webkit.CookieSyncManager;
 import com.microsoft.aad.adal.AuthenticationCallback;
 import com.microsoft.aad.adal.AuthenticationCancelError;
 import com.microsoft.aad.adal.AuthenticationContext;
+import com.microsoft.aad.adal.AuthenticationException;
 import com.microsoft.aad.adal.AuthenticationResult;
 import com.microsoft.aad.adal.PromptBehavior;
 import com.onedrive.sdk.core.ClientException;
@@ -394,7 +395,13 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
             @Override
             public void onError(final Exception e) {
-                error.set(new ClientAuthenticatorException("Silent authentication failure from ADAL",
+                String message = "Silent authentication failure from ADAL";
+                if (e instanceof AuthenticationException) {
+                    message = String.format("%s; Code %s",
+                                            message,
+                                            ((AuthenticationException)e).getCode().getDescription());
+                }
+                error.set(new ClientAuthenticatorException(message,
                                                            e,
                                                            OneDriveErrorCodes.AuthenticationFailure));
                 loginSilentWaiter.signal();
@@ -509,7 +516,13 @@ public abstract class ADALAuthenticator implements IAuthenticator {
                     code = OneDriveErrorCodes.AuthenticationCancelled;
                 }
 
-                final String message = "Error while retrieving the discovery service auth token";
+                String message = "Error while retrieving the discovery service auth token";
+                if (ex instanceof AuthenticationException) {
+                    message = String.format("%s; Code %s",
+                            message,
+                            ((AuthenticationException)ex).getCode().getDescription());
+                }
+
                 error.set(new ClientAuthenticatorException(message, ex, code));
                 mLogger.logError("Error while attempting to login interactively", error.get());
                 discoveryCallbackWaiter.signal();
@@ -609,12 +622,18 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
             @Override
             public void onError(final Exception e) {
+                String message = "Error while retrieving the service specific auth token";
                 OneDriveErrorCodes code = OneDriveErrorCodes.AuthenticationFailure;
                 if (e instanceof AuthenticationCancelError) {
                     code = OneDriveErrorCodes.AuthenticationCancelled;
                 }
+                if (e instanceof AuthenticationException) {
+                    message = String.format("%s; Code %s",
+                                            message,
+                                            ((AuthenticationException)e).getCode().getDescription());
+                }
 
-                error.set(new ClientAuthenticatorException("Error while retrieving the service specific auth token",
+                error.set(new ClientAuthenticatorException(message,
                                                            e,
                                                            code));
                 mLogger.logError("Unable to refresh token into OneDrive service access token", error.get());
