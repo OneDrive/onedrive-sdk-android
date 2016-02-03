@@ -365,12 +365,12 @@ public abstract class ADALAuthenticator implements IAuthenticator {
             throw new IllegalStateException("init must be called");
         }
 
+        mLogger.logDebug("Starting login silent");
+
         if (mResourceUrl.get() == null) {
             mLogger.logDebug("No login information found for silent authentication");
             return null;
         }
-
-        mLogger.logDebug("Starting login silent");
 
         final SimpleWaiter loginSilentWaiter = new SimpleWaiter();
         final AtomicReference<AuthenticationResult> authResult = new AtomicReference<>();

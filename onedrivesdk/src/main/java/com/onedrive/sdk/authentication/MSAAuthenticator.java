@@ -278,11 +278,11 @@ public abstract class MSAAuthenticator implements IAuthenticator {
             throw new IllegalStateException("init must be called");
         }
 
+        mLogger.logDebug("Starting login silent");
+
         if (mUserId.get() == null) {
             mLogger.logDebug("No login information found for silent authentication");
         }
-
-        mLogger.logDebug("Starting login silent");
 
         final SimpleWaiter loginSilentWaiter = new SimpleWaiter();
         final AtomicReference<ClientException> error = new AtomicReference<>();
