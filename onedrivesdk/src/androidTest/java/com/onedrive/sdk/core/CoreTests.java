@@ -33,7 +33,7 @@ import junit.framework.Assert;
  */
 public class CoreTests extends AndroidTestCase  {
 
-    public void minVersionNumber() throws Exception {
-        Assert.assertTrue("Regression in version number, " + BuildConfig.VERSION_CODE, BuildConfig.VERSION_CODE > 10102);
+    public void testMinVersionNumber() throws Exception {
+        Assert.assertTrue("Regression in version number, " + BuildConfig.VERSION_CODE, BuildConfig.VERSION_CODE >= 10102);
     }
 }
