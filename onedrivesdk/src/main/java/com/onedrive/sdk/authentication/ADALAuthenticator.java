@@ -34,6 +34,7 @@ import com.microsoft.aad.adal.AuthenticationContext;
 import com.microsoft.aad.adal.AuthenticationException;
 import com.microsoft.aad.adal.AuthenticationResult;
 import com.microsoft.aad.adal.PromptBehavior;
+import com.microsoft.onedrivesdk.BuildConfig;
 import com.onedrive.sdk.concurrency.ICallback;
 import com.onedrive.sdk.concurrency.IExecutors;
 import com.onedrive.sdk.concurrency.SimpleWaiter;
@@ -94,6 +95,11 @@ public abstract class ADALAuthenticator implements IAuthenticator {
      * The key for the service info.
      */
     private static final String SERVICE_INFO_KEY = "serviceInfo";
+
+    /**
+     * The key for the version
+     */
+    private static final String VERSION_KEY = "version";
 
     /**
      * Determines if the authority should be validated.
@@ -312,6 +318,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
                 .putString(RESOURCE_URL_KEY, mResourceUrl.get())
                 .putString(USER_ID_KEY, mUserId.get())
                 .putString(SERVICE_INFO_KEY, serviceInfoAsString)
+                .putString(VERSION_KEY, BuildConfig.VERSION_NAME)
                 .apply();
 
         mLogger.logDebug("Successfully retrieved login information");
@@ -477,7 +484,10 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
         mLogger.logDebug("Clearing all ADAL Authenticator shared preferences");
         final SharedPreferences prefs = getSharedPreferences();
-        prefs.edit().clear().apply();
+        prefs.edit()
+             .clear()
+             .putString(VERSION_KEY, BuildConfig.VERSION_NAME)
+             .apply();
         mUserId.set(null);
         mResourceUrl.set(null);
     }

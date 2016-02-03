@@ -26,6 +26,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.microsoft.onedrivesdk.BuildConfig;
 import com.microsoft.services.msa.LiveAuthClient;
 import com.microsoft.services.msa.LiveAuthException;
 import com.microsoft.services.msa.LiveAuthListener;
@@ -64,6 +65,11 @@ public abstract class MSAAuthenticator implements IAuthenticator {
      * The key for the user id.
      */
     private static final String USER_ID_KEY = "userId";
+
+    /**
+     * The key for the version
+     */
+    public static final String VERSION_KEY = "Version";
 
     /**
      * The default user id
@@ -234,6 +240,7 @@ public abstract class MSAAuthenticator implements IAuthenticator {
         final SharedPreferences prefs = getSharedPreferences();
         prefs.edit()
              .putString(USER_ID_KEY, mUserId.get())
+             .putString(VERSION_KEY, BuildConfig.VERSION_NAME)
              .apply();
 
         return getAccountInfo();
@@ -398,7 +405,10 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
         mLogger.logDebug("Clearing all MSA Authenticator shared preferences");
         final SharedPreferences prefs = getSharedPreferences();
-        prefs.edit().clear().apply();
+        prefs.edit()
+             .clear()
+             .putString(VERSION_KEY, BuildConfig.VERSION_NAME)
+             .apply();
         mUserId.set(null);
 
         final ClientException exception = error.get();
