@@ -295,7 +295,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
         // Request a fresh auth token for the OneDrive service.
         final AuthenticationResult oneDriveServiceAuthToken =
-                getOneDriveServiceAuthResult(discoveryServiceAuthToken, oneDriveServiceInfo);
+                getOneDriveServiceAuthResult(oneDriveServiceInfo);
 
         // Get the OneDrive auth token and save a reference to it.
         final String serviceInfoAsString = mHttpProvider.getSerializer()
@@ -591,12 +591,10 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
     /**
      * Gets the authentication token for the OneDrive service.
-     * @param authenticationResult The authentication result from the Discovery Service.
      * @param oneDriveServiceInfo The OneDrive services info.
      * @return The authentication result for this OneDrive service.
      */
-    private AuthenticationResult getOneDriveServiceAuthResult(final AuthenticationResult authenticationResult,
-                                                              final ServiceInfo oneDriveServiceInfo) {
+    private AuthenticationResult getOneDriveServiceAuthResult(final ServiceInfo oneDriveServiceInfo) {
         final SimpleWaiter authorityCallbackWaiter = new SimpleWaiter();
         final AtomicReference<ClientException> error = new AtomicReference<>();
         final AtomicReference<AuthenticationResult> oneDriveServiceAuthToken = new AtomicReference<>();
@@ -623,14 +621,13 @@ public abstract class ADALAuthenticator implements IAuthenticator {
                 authorityCallbackWaiter.signal();
             }
         };
-        final String refreshToken = authenticationResult.getRefreshToken();
-
         mLogger.logDebug("Starting OneDrive resource refresh token request");
-        mAdalContext.acquireTokenByRefreshToken(
-                                                   refreshToken,
-                                                   getClientId(),
-                                                   oneDriveServiceInfo.serviceResourceId,
-                                                   authorityCallback);
+        mAdalContext.acquireToken(mActivity,
+                                  oneDriveServiceInfo.serviceResourceId,
+                                  getClientId(),
+                                  getRedirectUrl(),
+                                  PromptBehavior.Auto,
+                                  authorityCallback);
 
         mLogger.logDebug("Waiting for token refresh");
         authorityCallbackWaiter.waitForSignal();
