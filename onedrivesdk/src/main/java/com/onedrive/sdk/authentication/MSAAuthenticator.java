@@ -289,6 +289,7 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
         if (mUserId.get() == null) {
             mLogger.logDebug("No login information found for silent authentication");
+            return null;
         }
 
         final SimpleWaiter loginSilentWaiter = new SimpleWaiter();
