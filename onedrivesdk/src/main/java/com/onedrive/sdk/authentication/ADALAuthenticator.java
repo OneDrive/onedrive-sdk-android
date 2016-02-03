@@ -402,6 +402,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
                                             message,
                                             ((AuthenticationException)e).getCode().getDescription());
                 }
+                mLogger.logDebug(message);
                 error.set(new ClientAuthenticatorException(message,
                                                            e,
                                                            OneDriveErrorCodes.AuthenticationFailure));
