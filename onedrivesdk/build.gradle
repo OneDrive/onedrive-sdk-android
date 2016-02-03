@@ -1,20 +1,20 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-def getVersionCode() {
-    return mavenMajorVersion.toInteger() * 10000 + mavenMinorVersion.toInteger() * 100 + mavenPatchVersion.toInteger()
-}
-
-def getVersionName() {
-    return "${mavenMajorVersion}.${mavenMinorVersion}.${mavenPatchVersion}"
-}
-
 if (JavaVersion.current().isJava8Compatible()) {
     allprojects {
         tasks.withType(Javadoc) {
             options.addStringOption('Xdoclint:none', '-quiet')
         }
     }
+}
+
+def getVersionCode() {
+    return mavenMajorVersion.toInteger() * 10000 + mavenMinorVersion.toInteger() * 100 + mavenPatchVersion.toInteger()
+}
+
+def getVersionName() {
+    return "${mavenMajorVersion}.${mavenMinorVersion}.${mavenPatchVersion}"
 }
 
 android {
@@ -24,8 +24,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode getVersionCode()
-        versionName getVersionName()
+        versionCode this.getVersionCode()
+        versionName this.getVersionName()
     }
 
     lintOptions {
