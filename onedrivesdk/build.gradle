@@ -9,6 +9,14 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
+def getVersionCode() {
+    return mavenMajorVersion.toInteger() * 10000 + mavenMinorVersion.toInteger() * 100 + mavenPatchVersion.toInteger()
+}
+
+def getVersionName() {
+    return "${mavenMajorVersion}.${mavenMinorVersion}.${mavenPatchVersion}"
+}
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
@@ -16,8 +24,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode this.getVersionCode()
+        versionName this.getVersionName()
     }
 
     lintOptions {
@@ -79,7 +87,7 @@ uploadArchives {
         pom {
            setGroupId project.mavenGroupId
            setArtifactId project.mavenArtifactId
-           setVersion project.mavenVersion
+           setVersion getVersionName()
         }
         repository (url: project.mavenRepoUrl) {
             authentication(

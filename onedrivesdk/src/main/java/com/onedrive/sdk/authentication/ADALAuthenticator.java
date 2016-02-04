@@ -34,12 +34,13 @@ import com.microsoft.aad.adal.AuthenticationContext;
 import com.microsoft.aad.adal.AuthenticationException;
 import com.microsoft.aad.adal.AuthenticationResult;
 import com.microsoft.aad.adal.PromptBehavior;
+import com.microsoft.onedrivesdk.BuildConfig;
+import com.onedrive.sdk.concurrency.ICallback;
+import com.onedrive.sdk.concurrency.IExecutors;
+import com.onedrive.sdk.concurrency.SimpleWaiter;
 import com.onedrive.sdk.core.ClientException;
 import com.onedrive.sdk.core.OneDriveErrorCodes;
 import com.onedrive.sdk.http.BaseRequest;
-import com.onedrive.sdk.concurrency.ICallback;
-import com.onedrive.sdk.concurrency.SimpleWaiter;
-import com.onedrive.sdk.concurrency.IExecutors;
 import com.onedrive.sdk.http.HttpMethod;
 import com.onedrive.sdk.http.IHttpProvider;
 import com.onedrive.sdk.logger.ILogger;
@@ -94,6 +95,11 @@ public abstract class ADALAuthenticator implements IAuthenticator {
      * The key for the service info.
      */
     private static final String SERVICE_INFO_KEY = "serviceInfo";
+
+    /**
+     * The key for the version code
+     */
+    private static final String VERSION_CODE_KEY = "versionCode";
 
     /**
      * Determines if the authority should be validated.
@@ -312,6 +318,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
                 .putString(RESOURCE_URL_KEY, mResourceUrl.get())
                 .putString(USER_ID_KEY, mUserId.get())
                 .putString(SERVICE_INFO_KEY, serviceInfoAsString)
+                .putInt(VERSION_CODE_KEY, BuildConfig.VERSION_CODE)
                 .apply();
 
         mLogger.logDebug("Successfully retrieved login information");
@@ -365,11 +372,12 @@ public abstract class ADALAuthenticator implements IAuthenticator {
             throw new IllegalStateException("init must be called");
         }
 
+        mLogger.logDebug("Starting login silent");
+
         if (mResourceUrl.get() == null) {
+            mLogger.logDebug("No login information found for silent authentication");
             return null;
         }
-
-        mLogger.logDebug("Starting login silent");
 
         final SimpleWaiter loginSilentWaiter = new SimpleWaiter();
         final AtomicReference<AuthenticationResult> authResult = new AtomicReference<>();
@@ -401,6 +409,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
                                             message,
                                             ((AuthenticationException)e).getCode().getDescription());
                 }
+                mLogger.logDebug(message);
                 error.set(new ClientAuthenticatorException(message,
                                                            e,
                                                            OneDriveErrorCodes.AuthenticationFailure));
@@ -475,7 +484,10 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
         mLogger.logDebug("Clearing all ADAL Authenticator shared preferences");
         final SharedPreferences prefs = getSharedPreferences();
-        prefs.edit().clear().apply();
+        prefs.edit()
+             .clear()
+             .putInt(VERSION_CODE_KEY, BuildConfig.VERSION_CODE)
+             .apply();
         mUserId.set(null);
         mResourceUrl.set(null);
     }
