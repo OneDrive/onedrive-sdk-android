@@ -23,6 +23,7 @@
 package com.onedrive.sdk.http;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * An unexpected exception from the OneDrive service.
@@ -61,10 +62,20 @@ public class OneDriveFatalServiceException extends OneDriveServiceException {
         //noinspection StringBufferReplaceableByString
         final StringBuilder sb = new StringBuilder();
         sb.append("[This is an unexpected error from OneDrive, please report this at ")
-                .append(SDK_BUG_URL)
-                .append(']')
-                .append(NEW_LINE)
-                .append(super.getMessage(true));
+          .append(SDK_BUG_URL);
+
+        // Add the unique error identifier if it exists
+        for (final String header : getResponseHeaders()) {
+            if (header.toLowerCase(Locale.ROOT).startsWith(X_THROWSITE)) {
+                sb.append(", ID = ")
+                  .append(header);
+                break;
+            }
+        }
+
+        sb.append(']')
+          .append(NEW_LINE)
+          .append(super.getMessage(true));
         return sb.toString();
     }
 }

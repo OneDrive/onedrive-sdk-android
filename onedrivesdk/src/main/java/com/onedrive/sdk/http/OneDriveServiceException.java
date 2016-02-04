@@ -72,6 +72,16 @@ public class OneDriveServiceException extends ClientException {
     public static final int INTERNAL_SERVER_ERROR = 500;
 
     /**
+     * The throwsite header identifier
+     */
+    protected static final String X_THROWSITE = "x-throwsite";
+
+    /**
+     * The response headers.
+     */
+    private final List<String> mResponseHeaders;
+
+    /**
      * The OneDriveError response.
      */
     private final OneDriveErrorResponse mError;
@@ -107,11 +117,6 @@ public class OneDriveServiceException extends ClientException {
     private final String mResponseMessage;
 
     /**
-     * The response headers.
-     */
-    private final List<String> mResponseHeaders;
-
-    /**
      * Create a OneDrive service exception.
      * @param method The method that caused the exception.
      * @param url The url.
@@ -144,6 +149,14 @@ public class OneDriveServiceException extends ClientException {
     @Override
     public String getMessage() {
         return getMessage(false);
+    }
+
+    /**
+     * The response headers.
+     * @return The list of response headers
+     */
+    public List<String> getResponseHeaders() {
+        return mResponseHeaders;
     }
 
     /**
@@ -192,7 +205,7 @@ public class OneDriveServiceException extends ClientException {
             if (verbose) {
                 sb.append(header).append(NEW_LINE);
             } else {
-                if (header.toLowerCase(Locale.ROOT).startsWith("x-throwsite")) {
+                if (header.toLowerCase(Locale.ROOT).startsWith(X_THROWSITE)) {
                     sb.append(header).append(NEW_LINE);
                 }
             }
@@ -295,7 +308,7 @@ public class OneDriveServiceException extends ClientException {
             error.error.innererror.code = ex.getMessage();
         }
 
-        if (responseCode >= INTERNAL_SERVER_ERROR) {
+        if (responseCode == INTERNAL_SERVER_ERROR) {
             return new OneDriveFatalServiceException(method,
                                                      url,
                                                      requestHeaders,
