@@ -34,6 +34,7 @@ public enum OneDriveErrorCodes {
     AsyncTaskNotCompleted,
     AuthenticationCancelled,
     AuthenticationFailure,
+    AuthenicationPermissionsDenied,
     GeneralException,
     InvalidRange,
     InvalidRequest,

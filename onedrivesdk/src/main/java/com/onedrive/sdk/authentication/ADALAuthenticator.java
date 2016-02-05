@@ -34,6 +34,7 @@ import com.microsoft.aad.adal.AuthenticationContext;
 import com.microsoft.aad.adal.AuthenticationException;
 import com.microsoft.aad.adal.AuthenticationResult;
 import com.microsoft.aad.adal.PromptBehavior;
+import com.onedrive.sdk.authentication.adal.BrokerPermissionsChecker;
 import com.microsoft.onedrivesdk.BuildConfig;
 import com.onedrive.sdk.concurrency.ICallback;
 import com.onedrive.sdk.concurrency.IExecutors;
@@ -197,6 +198,10 @@ public abstract class ADALAuthenticator implements IAuthenticator {
         mHttpProvider = httpProvider;
         mActivity = activity;
         mLogger = logger;
+
+        final BrokerPermissionsChecker brokerPermissionsChecker = new BrokerPermissionsChecker(mActivity, mLogger);
+        brokerPermissionsChecker.check();
+
         try {
             mAdalContext = new AuthenticationContext(activity,
                                                     LOGIN_AUTHORITY,
