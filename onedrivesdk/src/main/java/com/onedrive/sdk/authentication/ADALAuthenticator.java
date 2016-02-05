@@ -25,8 +25,6 @@ package com.onedrive.sdk.authentication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
@@ -35,14 +33,14 @@ import com.microsoft.aad.adal.AuthenticationCancelError;
 import com.microsoft.aad.adal.AuthenticationContext;
 import com.microsoft.aad.adal.AuthenticationException;
 import com.microsoft.aad.adal.AuthenticationResult;
-import com.microsoft.aad.adal.AuthenticationSettings;
 import com.microsoft.aad.adal.PromptBehavior;
+import com.onedrive.sdk.authentication.adal.BrokerPermissionsChecker;
+import com.onedrive.sdk.concurrency.ICallback;
+import com.onedrive.sdk.concurrency.IExecutors;
+import com.onedrive.sdk.concurrency.SimpleWaiter;
 import com.onedrive.sdk.core.ClientException;
 import com.onedrive.sdk.core.OneDriveErrorCodes;
 import com.onedrive.sdk.http.BaseRequest;
-import com.onedrive.sdk.concurrency.ICallback;
-import com.onedrive.sdk.concurrency.SimpleWaiter;
-import com.onedrive.sdk.concurrency.IExecutors;
 import com.onedrive.sdk.http.HttpMethod;
 import com.onedrive.sdk.http.IHttpProvider;
 import com.onedrive.sdk.logger.ILogger;
@@ -82,21 +80,6 @@ public abstract class ADALAuthenticator implements IAuthenticator {
      * The preferences for this authenticator.
      */
     private static final String ADAL_AUTHENTICATOR_PREFS = "ADALAuthenticatorPrefs";
-
-    /**
-     * The url to the ADAL project for reference
-     */
-    @SuppressWarnings("FieldCanBeLocal")
-    private final String mAdalProjectUrl = "https://github.com/AzureAD/azure-activedirectory-library-for-android";
-
-    /**
-     * The permissions need to use a the account broker with ADAL
-     */
-    private final String[] mBrokerRequirePermissions = new String[] {
-            "android.permission.GET_ACCOUNTS",
-            "android.permission.MANAGE_ACCOUNTS",
-            "android.permission.USE_CREDENTIALS"
-    };
 
     /**
      * The key for the user id.
@@ -210,18 +193,8 @@ public abstract class ADALAuthenticator implements IAuthenticator {
         mActivity = activity;
         mLogger = logger;
 
-        if (!AuthenticationSettings.INSTANCE.getSkipBroker()) {
-            for (final String permission : mBrokerRequirePermissions) {
-                if (ContextCompat.checkSelfPermission(mActivity, permission) == PackageManager.PERMISSION_DENIED) {
-                    final String message = String.format(
-                            "Required permissions to use the Broker are denied: %s, see %s for more details",
-                            permission,
-                            mAdalProjectUrl);
-                    mLogger.logDebug(message);
-                    throw new ClientAuthenticatorException(message, OneDriveErrorCodes.AuthenicationPermissionsDenied);
-                }
-            }
-        }
+        final BrokerPermissionsChecker brokerPermissionsChecker = new BrokerPermissionsChecker(mActivity, mLogger);
+        brokerPermissionsChecker.check();
 
         try {
             mAdalContext = new AuthenticationContext(activity,
