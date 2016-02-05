@@ -20,30 +20,20 @@
 // THE SOFTWARE.
 // ------------------------------------------------------------------------------
 
-package com.onedrive.sdk.serializer;
-
-import com.onedrive.sdk.extensions.Drive;
-import com.onedrive.sdk.logger.DefaultLogger;
+package com.onedrive.sdk.core;
 
 import android.test.AndroidTestCase;
 
+import com.microsoft.onedrivesdk.BuildConfig;
+
+import junit.framework.Assert;
+
 /**
- * Test cases for the {@see DefaultSerializer}
+ * Test cases for the Core components
  */
-public class DefaultSerializerTests extends AndroidTestCase  {
+public class CoreTests extends AndroidTestCase  {
 
-    /**
-     * Make sure that deserializing a Drive also returns members from BaseDrive
-     * @throws Exception If there is an exception during the test
-     */
-    public void testDriveDeserialization() throws Exception {
-        final DefaultSerializer serializer = new DefaultSerializer(new DefaultLogger());
-        String source = "{\"@odata.context\":\"https://api.onedrive.com/v1.0/$metadata#drives/$entity\",\"id\":\"8bf6ae90006c4a4c\",\"driveType\":\"personal\",\"owner\":{\"user\":{\"displayName\":\"Peter\",\"id\":\"8bf6ae90006c4a4c\"}},\"quota\":{\"deleted\":1485718314,\"remaining\":983887466461,\"state\":\"normal\",\"total\":1142461300736,\"used\":158573834275}}";
-        Drive result = serializer.deserializeObject(source, Drive.class);
-        assertNotNull(result);
-        assertEquals("personal", result.driveType);
-        assertEquals(Long.valueOf(983887466461L), result.quota.remaining);
-        assertEquals("8bf6ae90006c4a4c", result.id);
-
+    public void testMinVersionNumber() throws Exception {
+        Assert.assertTrue("Regression in version number, " + BuildConfig.VERSION_CODE, BuildConfig.VERSION_CODE >= 10102);
     }
 }
