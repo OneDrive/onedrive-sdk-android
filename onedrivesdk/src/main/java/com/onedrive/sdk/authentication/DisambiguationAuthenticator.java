@@ -165,11 +165,11 @@ public class DisambiguationAuthenticator implements IAuthenticator {
 
             @Override
             public void failure(final ClientException error2) {
-                disambiguationWaiter.signal();
                 error.set(new ClientAuthenticatorException("Unable to disambiguate account type",
                                                            OneDriveErrorCodes.AuthenticationFailure));
                 //noinspection ThrowableResultOfMethodCallIgnored
                 mLogger.logError(error.get().getMessage(), error.get());
+                disambiguationWaiter.signal();
             }
         };
 
