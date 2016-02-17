@@ -47,6 +47,10 @@ public interface IBaseItemRequest extends IHttpRequest {
 
     Item update(final Item sourceItem) throws ClientException;
 
+    void patch(final Item sourceItem, final ICallback<Item> callback);
+
+    Item patch(final Item sourceItem) throws ClientException;
+
     void delete(final ICallback<Void> callback);
 
     void delete()  throws ClientException;
@@ -54,6 +58,10 @@ public interface IBaseItemRequest extends IHttpRequest {
     void create(final Item newItem, final ICallback<Item> callback);
 
     Item create(final Item newItem) throws ClientException;
+
+    void post(final Item newItem, final ICallback<Item> callback);
+
+    Item post(final Item newItem) throws ClientException;
 
     IBaseItemRequest select(final String value);
 

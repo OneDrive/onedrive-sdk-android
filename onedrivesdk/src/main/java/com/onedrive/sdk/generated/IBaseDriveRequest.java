@@ -47,6 +47,10 @@ public interface IBaseDriveRequest extends IHttpRequest {
 
     Drive update(final Drive sourceDrive) throws ClientException;
 
+    void patch(final Drive sourceDrive, final ICallback<Drive> callback);
+
+    Drive patch(final Drive sourceDrive) throws ClientException;
+
     void delete(final ICallback<Void> callback);
 
     void delete()  throws ClientException;
@@ -54,6 +58,10 @@ public interface IBaseDriveRequest extends IHttpRequest {
     void create(final Drive newDrive, final ICallback<Drive> callback);
 
     Drive create(final Drive newDrive) throws ClientException;
+
+    void post(final Drive newDrive, final ICallback<Drive> callback);
+
+    Drive post(final Drive newDrive) throws ClientException;
 
     IBaseDriveRequest select(final String value);
 

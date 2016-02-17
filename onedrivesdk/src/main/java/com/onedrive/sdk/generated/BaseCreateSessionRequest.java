@@ -54,10 +54,18 @@ public class BaseCreateSessionRequest extends BaseRequest implements IBaseCreate
     }
 
     public void create(final ICallback<UploadSession> callback) {
-        send(HttpMethod.POST, callback, mBody);
+        this.post(callback);
     }
 
     public UploadSession create() throws ClientException {
+        return this.post();
+    }
+
+    public void post(final ICallback<UploadSession> callback) {
+        send(HttpMethod.POST, callback, mBody);
+    }
+
+    public UploadSession post() throws ClientException {
         return send(HttpMethod.POST, mBody);
     }
 

@@ -47,6 +47,10 @@ public interface IBaseItemCollectionRequest {
 
     Item create(final Item newItem) throws ClientException;
 
+    void post(final Item newItem, final ICallback<Item> callback);
+
+    Item post(final Item newItem) throws ClientException;
+
     IItemCollectionRequest expand(final String value);
 
     IItemCollectionRequest select(final String value);

@@ -47,6 +47,10 @@ public interface IBaseThumbnailSetRequest extends IHttpRequest {
 
     ThumbnailSet update(final ThumbnailSet sourceThumbnailSet) throws ClientException;
 
+    void patch(final ThumbnailSet sourceThumbnailSet, final ICallback<ThumbnailSet> callback);
+
+    ThumbnailSet patch(final ThumbnailSet sourceThumbnailSet) throws ClientException;
+
     void delete(final ICallback<Void> callback);
 
     void delete()  throws ClientException;
@@ -54,6 +58,10 @@ public interface IBaseThumbnailSetRequest extends IHttpRequest {
     void create(final ThumbnailSet newThumbnailSet, final ICallback<ThumbnailSet> callback);
 
     ThumbnailSet create(final ThumbnailSet newThumbnailSet) throws ClientException;
+
+    void post(final ThumbnailSet newThumbnailSet, final ICallback<ThumbnailSet> callback);
+
+    ThumbnailSet post(final ThumbnailSet newThumbnailSet) throws ClientException;
 
     IBaseThumbnailSetRequest select(final String value);
 

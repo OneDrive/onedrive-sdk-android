@@ -58,11 +58,21 @@ public class BaseThumbnailRequest extends BaseRequest implements IBaseThumbnailR
        return send(HttpMethod.GET, null);
     }
 
+    @Deprecated
     public void update(final Thumbnail sourceThumbnail, final ICallback<Thumbnail> callback) {
+        this.patch(sourceThumbnail, callback);
+    }
+
+    @Deprecated
+    public Thumbnail update(final Thumbnail sourceThumbnail) throws ClientException {
+        return this.patch(sourceThumbnail);
+    }
+
+    public void patch(final Thumbnail sourceThumbnail, final ICallback<Thumbnail> callback) {
         send(HttpMethod.PATCH, callback, sourceThumbnail);
     }
 
-    public Thumbnail update(final Thumbnail sourceThumbnail) throws ClientException {
+    public Thumbnail patch(final Thumbnail sourceThumbnail) throws ClientException {
         return send(HttpMethod.PATCH, sourceThumbnail);
     }
 
@@ -74,11 +84,21 @@ public class BaseThumbnailRequest extends BaseRequest implements IBaseThumbnailR
         send(HttpMethod.DELETE, null);
     }
 
+    @Deprecated
     public void create(final Thumbnail newThumbnail, final ICallback<Thumbnail> callback) {
+        this.post(newThumbnail, callback);
+    }
+
+    @Deprecated
+    public Thumbnail create(final Thumbnail newThumbnail) throws ClientException {
+        return this.post(newThumbnail);
+    }
+
+    public void post(final Thumbnail newThumbnail, final ICallback<Thumbnail> callback) {
         send(HttpMethod.POST, callback, newThumbnail);
     }
 
-    public Thumbnail create(final Thumbnail newThumbnail) throws ClientException {
+    public Thumbnail post(final Thumbnail newThumbnail) throws ClientException {
         return send(HttpMethod.POST, newThumbnail);
     }
 

@@ -47,6 +47,10 @@ public interface IBasePermissionRequest extends IHttpRequest {
 
     Permission update(final Permission sourcePermission) throws ClientException;
 
+    void patch(final Permission sourcePermission, final ICallback<Permission> callback);
+
+    Permission patch(final Permission sourcePermission) throws ClientException;
+
     void delete(final ICallback<Void> callback);
 
     void delete()  throws ClientException;
@@ -54,6 +58,10 @@ public interface IBasePermissionRequest extends IHttpRequest {
     void create(final Permission newPermission, final ICallback<Permission> callback);
 
     Permission create(final Permission newPermission) throws ClientException;
+
+    void post(final Permission newPermission, final ICallback<Permission> callback);
+
+    Permission post(final Permission newPermission) throws ClientException;
 
     IBasePermissionRequest select(final String value);
 

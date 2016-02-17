@@ -58,11 +58,21 @@ public class BaseShareRequest extends BaseRequest implements IBaseShareRequest {
        return send(HttpMethod.GET, null);
     }
 
+    @Deprecated
     public void update(final Share sourceShare, final ICallback<Share> callback) {
+        this.patch(sourceShare, callback);
+    }
+
+    @Deprecated
+    public Share update(final Share sourceShare) throws ClientException {
+        return this.patch(sourceShare);
+    }
+
+    public void patch(final Share sourceShare, final ICallback<Share> callback) {
         send(HttpMethod.PATCH, callback, sourceShare);
     }
 
-    public Share update(final Share sourceShare) throws ClientException {
+    public Share patch(final Share sourceShare) throws ClientException {
         return send(HttpMethod.PATCH, sourceShare);
     }
 
@@ -74,11 +84,21 @@ public class BaseShareRequest extends BaseRequest implements IBaseShareRequest {
         send(HttpMethod.DELETE, null);
     }
 
+    @Deprecated
     public void create(final Share newShare, final ICallback<Share> callback) {
+        this.post(newShare, callback);
+    }
+
+    @Deprecated
+    public Share create(final Share newShare) throws ClientException {
+        return this.post(newShare);
+    }
+
+    public void post(final Share newShare, final ICallback<Share> callback) {
         send(HttpMethod.POST, callback, newShare);
     }
 
-    public Share create(final Share newShare) throws ClientException {
+    public Share post(final Share newShare) throws ClientException {
         return send(HttpMethod.POST, newShare);
     }
 

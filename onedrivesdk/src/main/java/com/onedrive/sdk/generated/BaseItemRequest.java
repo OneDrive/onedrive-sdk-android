@@ -58,11 +58,21 @@ public class BaseItemRequest extends BaseRequest implements IBaseItemRequest {
        return send(HttpMethod.GET, null);
     }
 
+    @Deprecated
     public void update(final Item sourceItem, final ICallback<Item> callback) {
+        this.patch(sourceItem, callback);
+    }
+
+    @Deprecated
+    public Item update(final Item sourceItem) throws ClientException {
+        return this.patch(sourceItem);
+    }
+
+    public void patch(final Item sourceItem, final ICallback<Item> callback) {
         send(HttpMethod.PATCH, callback, sourceItem);
     }
 
-    public Item update(final Item sourceItem) throws ClientException {
+    public Item patch(final Item sourceItem) throws ClientException {
         return send(HttpMethod.PATCH, sourceItem);
     }
 
@@ -74,11 +84,21 @@ public class BaseItemRequest extends BaseRequest implements IBaseItemRequest {
         send(HttpMethod.DELETE, null);
     }
 
+    @Deprecated
     public void create(final Item newItem, final ICallback<Item> callback) {
+        this.post(newItem, callback);
+    }
+
+    @Deprecated
+    public Item create(final Item newItem) throws ClientException {
+        return this.post(newItem);
+    }
+
+    public void post(final Item newItem, final ICallback<Item> callback) {
         send(HttpMethod.POST, callback, newItem);
     }
 
-    public Item create(final Item newItem) throws ClientException {
+    public Item post(final Item newItem) throws ClientException {
         return send(HttpMethod.POST, newItem);
     }
 

@@ -54,10 +54,18 @@ public class BaseCreateLinkRequest extends BaseRequest implements IBaseCreateLin
     }
 
     public void create(final ICallback<Permission> callback) {
-        send(HttpMethod.POST, callback, mBody);
+        this.post(callback);
     }
 
     public Permission create() throws ClientException {
+        return this.post();
+    }
+
+    public void post(final ICallback<Permission> callback) {
+        send(HttpMethod.POST, callback, mBody);
+    }
+
+    public Permission post() throws ClientException {
         return send(HttpMethod.POST, mBody);
     }
 

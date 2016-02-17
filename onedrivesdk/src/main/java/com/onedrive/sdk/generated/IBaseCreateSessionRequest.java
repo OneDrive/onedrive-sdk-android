@@ -46,6 +46,10 @@ public interface IBaseCreateSessionRequest {
 
     UploadSession create() throws ClientException;
 
+    void post(final ICallback<UploadSession> callback);
+
+    UploadSession post() throws ClientException;
+
     ICreateSessionRequest select(final String value) ;
 
     ICreateSessionRequest top(final int value);

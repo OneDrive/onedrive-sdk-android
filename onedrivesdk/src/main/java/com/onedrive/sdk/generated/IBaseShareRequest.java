@@ -47,6 +47,10 @@ public interface IBaseShareRequest extends IHttpRequest {
 
     Share update(final Share sourceShare) throws ClientException;
 
+    void patch(final Share sourceShare, final ICallback<Share> callback);
+
+    Share patch(final Share sourceShare) throws ClientException;
+
     void delete(final ICallback<Void> callback);
 
     void delete()  throws ClientException;
@@ -54,6 +58,10 @@ public interface IBaseShareRequest extends IHttpRequest {
     void create(final Share newShare, final ICallback<Share> callback);
 
     Share create(final Share newShare) throws ClientException;
+
+    void post(final Share newShare, final ICallback<Share> callback);
+
+    Share post(final Share newShare) throws ClientException;
 
     IBaseShareRequest select(final String value);
 

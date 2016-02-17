@@ -46,6 +46,10 @@ public interface IBaseCopyRequest {
 
     AsyncMonitor<Item> create() throws ClientException;
 
+    void post(final ICallback<AsyncMonitor<Item>> callback);
+
+    AsyncMonitor<Item> post() throws ClientException;
+
     ICopyRequest select(final String value) ;
 
     ICopyRequest top(final int value);

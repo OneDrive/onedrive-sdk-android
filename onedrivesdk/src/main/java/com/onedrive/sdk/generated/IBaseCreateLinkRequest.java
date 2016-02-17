@@ -46,6 +46,10 @@ public interface IBaseCreateLinkRequest {
 
     Permission create() throws ClientException;
 
+    void post(final ICallback<Permission> callback);
+
+    Permission post() throws ClientException;
+
     ICreateLinkRequest select(final String value) ;
 
     ICreateLinkRequest top(final int value);

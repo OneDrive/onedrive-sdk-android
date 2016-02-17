@@ -58,11 +58,21 @@ public class BaseDriveRequest extends BaseRequest implements IBaseDriveRequest {
        return send(HttpMethod.GET, null);
     }
 
+    @Deprecated
     public void update(final Drive sourceDrive, final ICallback<Drive> callback) {
+        this.patch(sourceDrive, callback);
+    }
+
+    @Deprecated
+    public Drive update(final Drive sourceDrive) throws ClientException {
+        return this.patch(sourceDrive);
+    }
+
+    public void patch(final Drive sourceDrive, final ICallback<Drive> callback) {
         send(HttpMethod.PATCH, callback, sourceDrive);
     }
 
-    public Drive update(final Drive sourceDrive) throws ClientException {
+    public Drive patch(final Drive sourceDrive) throws ClientException {
         return send(HttpMethod.PATCH, sourceDrive);
     }
 
@@ -74,11 +84,21 @@ public class BaseDriveRequest extends BaseRequest implements IBaseDriveRequest {
         send(HttpMethod.DELETE, null);
     }
 
+    @Deprecated
     public void create(final Drive newDrive, final ICallback<Drive> callback) {
+        this.post(newDrive, callback);
+    }
+
+    @Deprecated
+    public Drive create(final Drive newDrive) throws ClientException {
+        return this.post(newDrive);
+    }
+
+    public void post(final Drive newDrive, final ICallback<Drive> callback) {
         send(HttpMethod.POST, callback, newDrive);
     }
 
-    public Drive create(final Drive newDrive) throws ClientException {
+    public Drive post(final Drive newDrive) throws ClientException {
         return send(HttpMethod.POST, newDrive);
     }
 

@@ -70,20 +70,29 @@ public class BaseItemCollectionRequest extends BaseCollectionRequest<BaseItemCol
         return buildFromResponse(response);
     }
 
+    @Deprecated
     public void create(final Item newItem, final ICallback<Item> callback) {
+        this.post(newItem, callback);
+    }
+
+    @Deprecated
+    public Item create(final Item newItem) throws ClientException {
+        return this.post(newItem);
+    }
+
+    public void post(final Item newItem, final ICallback<Item> callback) {
         final String requestUrl = getBaseRequest().getRequestUrl().toString();
         new ItemRequestBuilder(requestUrl, getBaseRequest().getClient(), /* Options */ null)
             .buildRequest()
-            .create(newItem, callback);
+            .post(newItem, callback);
     }
 
-    public Item create(final Item newItem) throws ClientException {
+    public Item post(final Item newItem) throws ClientException {
         final String requestUrl = getBaseRequest().getRequestUrl().toString();
         return new ItemRequestBuilder(requestUrl, getBaseRequest().getClient(), /* Options */ null)
             .buildRequest()
-            .create(newItem);
+            .post(newItem);
     }
-
     public IItemCollectionRequest expand(final String value) {
         addQueryOption(new QueryOption("expand", value));
         return (ItemCollectionRequest)this;
