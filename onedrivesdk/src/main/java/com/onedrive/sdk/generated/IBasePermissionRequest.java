@@ -43,9 +43,15 @@ public interface IBasePermissionRequest extends IHttpRequest {
 
     Permission get() throws ClientException;
 
-    void update(final Permission sourcePermission, final ICallback<Permission> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Permission, ICallback)}
+     */
+    @Deprecated void update(final Permission sourcePermission, final ICallback<Permission> callback);
 
-    Permission update(final Permission sourcePermission) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Permission)}
+     */
+    @Deprecated Permission update(final Permission sourcePermission) throws ClientException;
 
     void patch(final Permission sourcePermission, final ICallback<Permission> callback);
 
@@ -55,9 +61,15 @@ public interface IBasePermissionRequest extends IHttpRequest {
 
     void delete()  throws ClientException;
 
-    void create(final Permission newPermission, final ICallback<Permission> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Permission, ICallback)}
+     */
+    @Deprecated void create(final Permission newPermission, final ICallback<Permission> callback);
 
-    Permission create(final Permission newPermission) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Permission)}
+     */
+    @Deprecated Permission create(final Permission newPermission) throws ClientException;
 
     void post(final Permission newPermission, final ICallback<Permission> callback);
 

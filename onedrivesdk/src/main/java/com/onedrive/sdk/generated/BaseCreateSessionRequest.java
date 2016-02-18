@@ -53,11 +53,17 @@ public class BaseCreateSessionRequest extends BaseRequest implements IBaseCreate
         mBody.item = item;
     }
 
-    public void create(final ICallback<UploadSession> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ICallback)}
+     */
+    @Deprecated public void create(final ICallback<UploadSession> callback) {
         this.post(callback);
     }
 
-    public UploadSession create() throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post()}
+     */
+    @Deprecated public UploadSession create() throws ClientException {
         return this.post();
     }
 

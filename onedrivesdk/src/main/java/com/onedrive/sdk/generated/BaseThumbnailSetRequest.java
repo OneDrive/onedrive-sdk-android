@@ -58,13 +58,17 @@ public class BaseThumbnailSetRequest extends BaseRequest implements IBaseThumbna
        return send(HttpMethod.GET, null);
     }
 
-    @Deprecated
-    public void update(final ThumbnailSet sourceThumbnailSet, final ICallback<ThumbnailSet> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(ThumbnailSet, ICallback)}
+     */
+    @Deprecated public void update(final ThumbnailSet sourceThumbnailSet, final ICallback<ThumbnailSet> callback) {
         this.patch(sourceThumbnailSet, callback);
     }
 
-    @Deprecated
-    public ThumbnailSet update(final ThumbnailSet sourceThumbnailSet) throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(ThumbnailSet)}
+     */
+    @Deprecated public ThumbnailSet update(final ThumbnailSet sourceThumbnailSet) throws ClientException {
         return this.patch(sourceThumbnailSet);
     }
 
@@ -84,13 +88,17 @@ public class BaseThumbnailSetRequest extends BaseRequest implements IBaseThumbna
         send(HttpMethod.DELETE, null);
     }
 
-    @Deprecated
-    public void create(final ThumbnailSet newThumbnailSet, final ICallback<ThumbnailSet> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ThumbnailSet, ICallback)}
+     */
+    @Deprecated public void create(final ThumbnailSet newThumbnailSet, final ICallback<ThumbnailSet> callback) {
         this.post(newThumbnailSet, callback);
     }
 
-    @Deprecated
-    public ThumbnailSet create(final ThumbnailSet newThumbnailSet) throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ThumbnailSet)}
+     */
+    @Deprecated public ThumbnailSet create(final ThumbnailSet newThumbnailSet) throws ClientException {
         return this.post(newThumbnailSet);
     }
 

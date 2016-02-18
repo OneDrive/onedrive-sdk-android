@@ -58,13 +58,17 @@ public class BaseThumbnailRequest extends BaseRequest implements IBaseThumbnailR
        return send(HttpMethod.GET, null);
     }
 
-    @Deprecated
-    public void update(final Thumbnail sourceThumbnail, final ICallback<Thumbnail> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Thumbnail, ICallback)}
+     */
+    @Deprecated public void update(final Thumbnail sourceThumbnail, final ICallback<Thumbnail> callback) {
         this.patch(sourceThumbnail, callback);
     }
 
-    @Deprecated
-    public Thumbnail update(final Thumbnail sourceThumbnail) throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Thumbnail)}
+     */
+    @Deprecated public Thumbnail update(final Thumbnail sourceThumbnail) throws ClientException {
         return this.patch(sourceThumbnail);
     }
 
@@ -84,13 +88,17 @@ public class BaseThumbnailRequest extends BaseRequest implements IBaseThumbnailR
         send(HttpMethod.DELETE, null);
     }
 
-    @Deprecated
-    public void create(final Thumbnail newThumbnail, final ICallback<Thumbnail> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Thumbnail, ICallback)}
+     */
+    @Deprecated public void create(final Thumbnail newThumbnail, final ICallback<Thumbnail> callback) {
         this.post(newThumbnail, callback);
     }
 
-    @Deprecated
-    public Thumbnail create(final Thumbnail newThumbnail) throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Thumbnail)}
+     */
+    @Deprecated public Thumbnail create(final Thumbnail newThumbnail) throws ClientException {
         return this.post(newThumbnail);
     }
 

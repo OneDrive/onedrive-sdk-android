@@ -53,11 +53,17 @@ public class BaseCreateLinkRequest extends BaseRequest implements IBaseCreateLin
         mBody.type = type;
     }
 
-    public void create(final ICallback<Permission> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ICallback)}
+     */
+    @Deprecated public void create(final ICallback<Permission> callback) {
         this.post(callback);
     }
 
-    public Permission create() throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post()}
+     */
+    @Deprecated public Permission create() throws ClientException {
         return this.post();
     }
 

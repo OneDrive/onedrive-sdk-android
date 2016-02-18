@@ -42,9 +42,15 @@ import com.google.gson.annotations.*;
  */
 public interface IBaseCreateLinkRequest {
 
-    void create(final ICallback<Permission> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ICallback)}
+     */
+    @Deprecated void create(final ICallback<Permission> callback);
 
-    Permission create() throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post()}
+     */
+    @Deprecated Permission create() throws ClientException;
 
     void post(final ICallback<Permission> callback);
 

@@ -70,13 +70,17 @@ public class BaseItemCollectionRequest extends BaseCollectionRequest<BaseItemCol
         return buildFromResponse(response);
     }
 
-    @Deprecated
-    public void create(final Item newItem, final ICallback<Item> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Item, ICallback)}
+     */
+    @Deprecated public void create(final Item newItem, final ICallback<Item> callback) {
         this.post(newItem, callback);
     }
 
-    @Deprecated
-    public Item create(final Item newItem) throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Item)}
+     */
+    @Deprecated public Item create(final Item newItem) throws ClientException {
         return this.post(newItem);
     }
 

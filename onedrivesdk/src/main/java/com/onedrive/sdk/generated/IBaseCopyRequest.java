@@ -42,9 +42,15 @@ import com.google.gson.annotations.*;
  */
 public interface IBaseCopyRequest {
 
-    void create(final ICallback<AsyncMonitor<Item>> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ICallback)}
+     */
+    @Deprecated void create(final ICallback<AsyncMonitor<Item>> callback);
 
-    AsyncMonitor<Item> create() throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post()}
+     */
+    @Deprecated AsyncMonitor<Item> create() throws ClientException;
 
     void post(final ICallback<AsyncMonitor<Item>> callback);
 

@@ -58,13 +58,17 @@ public class BasePermissionRequest extends BaseRequest implements IBasePermissio
        return send(HttpMethod.GET, null);
     }
 
-    @Deprecated
-    public void update(final Permission sourcePermission, final ICallback<Permission> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Permission, ICallback)}
+     */
+    @Deprecated public void update(final Permission sourcePermission, final ICallback<Permission> callback) {
         this.patch(sourcePermission, callback);
     }
 
-    @Deprecated
-    public Permission update(final Permission sourcePermission) throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Permission)}
+     */
+    @Deprecated public Permission update(final Permission sourcePermission) throws ClientException {
         return this.patch(sourcePermission);
     }
 
@@ -84,13 +88,17 @@ public class BasePermissionRequest extends BaseRequest implements IBasePermissio
         send(HttpMethod.DELETE, null);
     }
 
-    @Deprecated
-    public void create(final Permission newPermission, final ICallback<Permission> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Permission, ICallback)}
+     */
+    @Deprecated public void create(final Permission newPermission, final ICallback<Permission> callback) {
         this.post(newPermission, callback);
     }
 
-    @Deprecated
-    public Permission create(final Permission newPermission) throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Permission)}
+     */
+    @Deprecated public Permission create(final Permission newPermission) throws ClientException {
         return this.post(newPermission);
     }
 

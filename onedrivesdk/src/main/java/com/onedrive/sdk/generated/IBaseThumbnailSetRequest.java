@@ -43,9 +43,15 @@ public interface IBaseThumbnailSetRequest extends IHttpRequest {
 
     ThumbnailSet get() throws ClientException;
 
-    void update(final ThumbnailSet sourceThumbnailSet, final ICallback<ThumbnailSet> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(ThumbnailSet, ICallback)}
+     */
+    @Deprecated void update(final ThumbnailSet sourceThumbnailSet, final ICallback<ThumbnailSet> callback);
 
-    ThumbnailSet update(final ThumbnailSet sourceThumbnailSet) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(ThumbnailSet)}
+     */
+    @Deprecated ThumbnailSet update(final ThumbnailSet sourceThumbnailSet) throws ClientException;
 
     void patch(final ThumbnailSet sourceThumbnailSet, final ICallback<ThumbnailSet> callback);
 
@@ -55,9 +61,15 @@ public interface IBaseThumbnailSetRequest extends IHttpRequest {
 
     void delete()  throws ClientException;
 
-    void create(final ThumbnailSet newThumbnailSet, final ICallback<ThumbnailSet> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ThumbnailSet, ICallback)}
+     */
+    @Deprecated void create(final ThumbnailSet newThumbnailSet, final ICallback<ThumbnailSet> callback);
 
-    ThumbnailSet create(final ThumbnailSet newThumbnailSet) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ThumbnailSet)}
+     */
+    @Deprecated ThumbnailSet create(final ThumbnailSet newThumbnailSet) throws ClientException;
 
     void post(final ThumbnailSet newThumbnailSet, final ICallback<ThumbnailSet> callback);
 

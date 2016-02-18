@@ -55,13 +55,17 @@ public class BaseCopyRequest extends BaseRequest implements IBaseCopyRequest {
         addHeader("Prefer", "respond-async");
     }
 
-    @Deprecated
-    public void create(final ICallback<AsyncMonitor<Item>> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ICallback)}
+     */
+    @Deprecated public void create(final ICallback<AsyncMonitor<Item>> callback) {
         this.post(callback);
     }
 
-    @Deprecated
-    public AsyncMonitor<Item> create() throws ClientException {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post()}
+     */
+    @Deprecated public AsyncMonitor<Item> create() throws ClientException {
         return this.post();
     }
 
