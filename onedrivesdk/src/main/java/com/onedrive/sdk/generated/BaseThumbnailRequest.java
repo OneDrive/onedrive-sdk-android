@@ -58,11 +58,25 @@ public class BaseThumbnailRequest extends BaseRequest implements IBaseThumbnailR
        return send(HttpMethod.GET, null);
     }
 
-    public void update(final Thumbnail sourceThumbnail, final ICallback<Thumbnail> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Thumbnail, ICallback)}
+     */
+    @Deprecated public void update(final Thumbnail sourceThumbnail, final ICallback<Thumbnail> callback) {
+        this.patch(sourceThumbnail, callback);
+    }
+
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Thumbnail)}
+     */
+    @Deprecated public Thumbnail update(final Thumbnail sourceThumbnail) throws ClientException {
+        return this.patch(sourceThumbnail);
+    }
+
+    public void patch(final Thumbnail sourceThumbnail, final ICallback<Thumbnail> callback) {
         send(HttpMethod.PATCH, callback, sourceThumbnail);
     }
 
-    public Thumbnail update(final Thumbnail sourceThumbnail) throws ClientException {
+    public Thumbnail patch(final Thumbnail sourceThumbnail) throws ClientException {
         return send(HttpMethod.PATCH, sourceThumbnail);
     }
 
@@ -74,11 +88,25 @@ public class BaseThumbnailRequest extends BaseRequest implements IBaseThumbnailR
         send(HttpMethod.DELETE, null);
     }
 
-    public void create(final Thumbnail newThumbnail, final ICallback<Thumbnail> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Thumbnail, ICallback)}
+     */
+    @Deprecated public void create(final Thumbnail newThumbnail, final ICallback<Thumbnail> callback) {
+        this.post(newThumbnail, callback);
+    }
+
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Thumbnail)}
+     */
+    @Deprecated public Thumbnail create(final Thumbnail newThumbnail) throws ClientException {
+        return this.post(newThumbnail);
+    }
+
+    public void post(final Thumbnail newThumbnail, final ICallback<Thumbnail> callback) {
         send(HttpMethod.POST, callback, newThumbnail);
     }
 
-    public Thumbnail create(final Thumbnail newThumbnail) throws ClientException {
+    public Thumbnail post(final Thumbnail newThumbnail) throws ClientException {
         return send(HttpMethod.POST, newThumbnail);
     }
 

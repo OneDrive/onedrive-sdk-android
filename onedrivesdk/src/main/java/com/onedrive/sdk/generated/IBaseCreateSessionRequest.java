@@ -42,9 +42,19 @@ import com.google.gson.annotations.*;
  */
 public interface IBaseCreateSessionRequest {
 
-    void create(final ICallback<UploadSession> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ICallback)}
+     */
+    @Deprecated void create(final ICallback<UploadSession> callback);
 
-    UploadSession create() throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post()}
+     */
+    @Deprecated UploadSession create() throws ClientException;
+
+    void post(final ICallback<UploadSession> callback);
+
+    UploadSession post() throws ClientException;
 
     ICreateSessionRequest select(final String value) ;
 

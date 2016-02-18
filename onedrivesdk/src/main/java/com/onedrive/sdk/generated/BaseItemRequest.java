@@ -58,11 +58,25 @@ public class BaseItemRequest extends BaseRequest implements IBaseItemRequest {
        return send(HttpMethod.GET, null);
     }
 
-    public void update(final Item sourceItem, final ICallback<Item> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Item, ICallback)}
+     */
+    @Deprecated public void update(final Item sourceItem, final ICallback<Item> callback) {
+        this.patch(sourceItem, callback);
+    }
+
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Item)}
+     */
+    @Deprecated public Item update(final Item sourceItem) throws ClientException {
+        return this.patch(sourceItem);
+    }
+
+    public void patch(final Item sourceItem, final ICallback<Item> callback) {
         send(HttpMethod.PATCH, callback, sourceItem);
     }
 
-    public Item update(final Item sourceItem) throws ClientException {
+    public Item patch(final Item sourceItem) throws ClientException {
         return send(HttpMethod.PATCH, sourceItem);
     }
 
@@ -74,11 +88,25 @@ public class BaseItemRequest extends BaseRequest implements IBaseItemRequest {
         send(HttpMethod.DELETE, null);
     }
 
-    public void create(final Item newItem, final ICallback<Item> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Item, ICallback)}
+     */
+    @Deprecated public void create(final Item newItem, final ICallback<Item> callback) {
+        this.post(newItem, callback);
+    }
+
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Item)}
+     */
+    @Deprecated public Item create(final Item newItem) throws ClientException {
+        return this.post(newItem);
+    }
+
+    public void post(final Item newItem, final ICallback<Item> callback) {
         send(HttpMethod.POST, callback, newItem);
     }
 
-    public Item create(final Item newItem) throws ClientException {
+    public Item post(final Item newItem) throws ClientException {
         return send(HttpMethod.POST, newItem);
     }
 

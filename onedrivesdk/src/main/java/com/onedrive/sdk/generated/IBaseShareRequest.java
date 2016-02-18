@@ -43,17 +43,37 @@ public interface IBaseShareRequest extends IHttpRequest {
 
     Share get() throws ClientException;
 
-    void update(final Share sourceShare, final ICallback<Share> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Share, ICallback)}
+     */
+    @Deprecated void update(final Share sourceShare, final ICallback<Share> callback);
 
-    Share update(final Share sourceShare) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Share)}
+     */
+    @Deprecated Share update(final Share sourceShare) throws ClientException;
+
+    void patch(final Share sourceShare, final ICallback<Share> callback);
+
+    Share patch(final Share sourceShare) throws ClientException;
 
     void delete(final ICallback<Void> callback);
 
     void delete()  throws ClientException;
 
-    void create(final Share newShare, final ICallback<Share> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Share, ICallback)}
+     */
+    @Deprecated void create(final Share newShare, final ICallback<Share> callback);
 
-    Share create(final Share newShare) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Share)}
+     */
+    @Deprecated Share create(final Share newShare) throws ClientException;
+
+    void post(final Share newShare, final ICallback<Share> callback);
+
+    Share post(final Share newShare) throws ClientException;
 
     IBaseShareRequest select(final String value);
 

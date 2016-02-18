@@ -43,9 +43,19 @@ public interface IBaseItemCollectionRequest {
 
     IItemCollectionPage get() throws ClientException;
 
-    void create(final Item newItem, final ICallback<Item> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Item, ICallback)}
+     */
+    @Deprecated void create(final Item newItem, final ICallback<Item> callback);
 
-    Item create(final Item newItem) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Item)}
+     */
+    @Deprecated Item create(final Item newItem) throws ClientException;
+
+    void post(final Item newItem, final ICallback<Item> callback);
+
+    Item post(final Item newItem) throws ClientException;
 
     IItemCollectionRequest expand(final String value);
 

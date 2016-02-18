@@ -79,8 +79,4 @@ public class BaseDriveRequestBuilder extends BaseRequestBuilder implements IBase
     public IAllPhotosRequestBuilder getAllPhotos() {
         return new AllPhotosRequestBuilder(getRequestUrlWithAdditionalSegment("view.allPhotos"), getClient(), null);
     }
-
-    public IRecentRequestBuilder getRecent() {
-        return new RecentRequestBuilder(getRequestUrlWithAdditionalSegment("view.recent"), getClient(), null);
-    }
 }

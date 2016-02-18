@@ -56,6 +56,4 @@ public interface IBaseDriveRequestBuilder extends IRequestBuilder {
     IItemRequestBuilder getSpecial(final String id);
 
     IAllPhotosRequestBuilder getAllPhotos();
-
-    IRecentRequestBuilder getRecent();
 }

@@ -43,17 +43,37 @@ public interface IBaseItemRequest extends IHttpRequest {
 
     Item get() throws ClientException;
 
-    void update(final Item sourceItem, final ICallback<Item> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Item, ICallback)}
+     */
+    @Deprecated void update(final Item sourceItem, final ICallback<Item> callback);
 
-    Item update(final Item sourceItem) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Item)}
+     */
+    @Deprecated Item update(final Item sourceItem) throws ClientException;
+
+    void patch(final Item sourceItem, final ICallback<Item> callback);
+
+    Item patch(final Item sourceItem) throws ClientException;
 
     void delete(final ICallback<Void> callback);
 
     void delete()  throws ClientException;
 
-    void create(final Item newItem, final ICallback<Item> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Item, ICallback)}
+     */
+    @Deprecated void create(final Item newItem, final ICallback<Item> callback);
 
-    Item create(final Item newItem) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Item)}
+     */
+    @Deprecated Item create(final Item newItem) throws ClientException;
+
+    void post(final Item newItem, final ICallback<Item> callback);
+
+    Item post(final Item newItem) throws ClientException;
 
     IBaseItemRequest select(final String value);
 

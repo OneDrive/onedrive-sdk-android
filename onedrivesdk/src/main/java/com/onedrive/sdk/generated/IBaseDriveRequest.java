@@ -43,17 +43,37 @@ public interface IBaseDriveRequest extends IHttpRequest {
 
     Drive get() throws ClientException;
 
-    void update(final Drive sourceDrive, final ICallback<Drive> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Drive, ICallback)}
+     */
+    @Deprecated void update(final Drive sourceDrive, final ICallback<Drive> callback);
 
-    Drive update(final Drive sourceDrive) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #patch(Drive)}
+     */
+    @Deprecated Drive update(final Drive sourceDrive) throws ClientException;
+
+    void patch(final Drive sourceDrive, final ICallback<Drive> callback);
+
+    Drive patch(final Drive sourceDrive) throws ClientException;
 
     void delete(final ICallback<Void> callback);
 
     void delete()  throws ClientException;
 
-    void create(final Drive newDrive, final ICallback<Drive> callback);
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Drive, ICallback)}
+     */
+    @Deprecated void create(final Drive newDrive, final ICallback<Drive> callback);
 
-    Drive create(final Drive newDrive) throws ClientException;
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(Drive)}
+     */
+    @Deprecated Drive create(final Drive newDrive) throws ClientException;
+
+    void post(final Drive newDrive, final ICallback<Drive> callback);
+
+    Drive post(final Drive newDrive) throws ClientException;
 
     IBaseDriveRequest select(final String value);
 

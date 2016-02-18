@@ -55,12 +55,26 @@ public class BaseCopyRequest extends BaseRequest implements IBaseCopyRequest {
         addHeader("Prefer", "respond-async");
     }
 
-    public void create(final ICallback<AsyncMonitor<Item>> callback) {
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post(ICallback)}
+     */
+    @Deprecated public void create(final ICallback<AsyncMonitor<Item>> callback) {
+        this.post(callback);
+    }
+
+    /**
+     * @deprecated  As of release 1.1.3, replaced by {@link #post()}
+     */
+    @Deprecated public AsyncMonitor<Item> create() throws ClientException {
+        return this.post();
+    }
+
+    public void post(final ICallback<AsyncMonitor<Item>> callback) {
         getClient().getExecutors().performOnBackground(new Runnable() {
             @Override
             public void run() {
                 try {
-                    getClient().getExecutors().performOnForeground(create(), callback);
+                    getClient().getExecutors().performOnForeground(post(), callback);
                 } catch (final ClientException e) {
                     getClient().getExecutors().performOnForeground(e, callback);
                 }
@@ -68,7 +82,7 @@ public class BaseCopyRequest extends BaseRequest implements IBaseCopyRequest {
         });
     }
 
-    public AsyncMonitor<Item> create() throws ClientException {
+    public AsyncMonitor<Item> post() throws ClientException {
         final AsyncMonitorLocation monitorLocation = send(HttpMethod.POST, mBody);
 
         return new AsyncMonitor<>(getClient(), monitorLocation, new ResultGetter<Item>() {
