@@ -16,7 +16,7 @@ repository {
 
 dependency {
     // Include the sdk as a dependency
-    compile('com.onedrive.sdk:onedrive-sdk-android:1.1+')
+    compile 'com.onedrive.sdk:onedrive-sdk-android:1.1+'
 
     // Include the gson dependency
     compile 'com.google.code.gson:gson:2.3.1'
@@ -70,12 +70,11 @@ final ADALAuthenticator adalAuthenticator = new ADALAuthenticator() {
 Once you have set the correct application Id and scopes, you must get a **OneDriveClient** object to make requests against the service. The SDK will store the account information for you, but when a user logs on for the first time, it will invoke UI to get the user's account information.
 
 ```java
-final IClientConfig oneDriveConfig = new DefaultClientConfig.createWithAuthenticators(
+final IClientConfig oneDriveConfig = DefaultClientConfig.createWithAuthenticators(
                                             msaAuthenticator,
                                             adalAuthenticator);
 
-final IOneDriveClient oneDriveClient = new OneDriveClient
-                                            .Builder()
+final IOneDriveClient oneDriveClient = new OneDriveClient.Builder()
                                             .fromConfig(oneDriveConfig)
                                             .loginAndBuildClient(getActivity());
 
