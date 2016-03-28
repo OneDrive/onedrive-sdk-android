@@ -104,10 +104,6 @@ public class BaseItemRequestBuilder extends BaseRequestBuilder implements IBaseI
         return new CreateLinkRequestBuilder(getRequestUrlWithAdditionalSegment("action.createLink"), getClient(), null, type);
     }
 
-    public IAllPhotosRequestBuilder getAllPhotos() {
-        return new AllPhotosRequestBuilder(getRequestUrlWithAdditionalSegment("view.allPhotos"), getClient(), null);
-    }
-
     public IDeltaRequestBuilder getDelta(final String token) {
         return new DeltaRequestBuilder(getRequestUrlWithAdditionalSegment("view.delta"), getClient(), null, token);
     }

@@ -35,18 +35,18 @@ import java.util.*;
 // This file is available for extending, afterwards please submit a pull request.
 
 /**
- * The class for the Recent Request.
+ * The class for the String Collection Page.
  */
-public class RecentRequest extends BaseRecentRequest implements IRecentRequest {
+public class StringCollectionPage extends BaseStringCollectionPage implements IStringCollectionPage {
 
     /**
-     * The request for this Recent
+     * A collection page for Shared.
      *
-     * @param requestUrl The request url
-     * @param client The service client
-     * @param options The options for this request
+     * @param response The serialized BaseStringCollectionResponse from the OneDrive service
+     * @param builder The request builder for the next collection page
      */
-    public RecentRequest(final String requestUrl, final IOneDriveClient client, final List<Option> options) {
-        super(requestUrl, client, options);
+    public StringCollectionPage(final BaseStringCollectionResponse response, final IStringCollectionRequestBuilder builder) {
+        super(response, builder);
     }
+
 }

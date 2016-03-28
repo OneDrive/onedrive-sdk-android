@@ -169,10 +169,22 @@ public class BaseItem implements IJsonBackedObject {
     public Photo photo;
 
     /**
+     * The Remote Item.
+     */
+    @SerializedName("remoteItem")
+    public Item remoteItem;
+
+    /**
      * The Search Result.
      */
     @SerializedName("searchResult")
     public SearchResult searchResult;
+
+    /**
+     * The Shared.
+     */
+    @SerializedName("shared")
+    public Shared shared;
 
     /**
      * The Special Folder.

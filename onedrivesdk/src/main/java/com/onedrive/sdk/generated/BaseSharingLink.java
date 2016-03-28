@@ -60,6 +60,18 @@ public class BaseSharingLink implements IJsonBackedObject {
     @SerializedName("webUrl")
     public String webUrl;
 
+    /**
+     * The Web Html.
+     */
+    @SerializedName("webHtml")
+    public String webHtml;
+
+    /**
+     * The Configurator Url.
+     */
+    @SerializedName("configuratorUrl")
+    public String configuratorUrl;
+
 
     /**
      * The raw representation of this class

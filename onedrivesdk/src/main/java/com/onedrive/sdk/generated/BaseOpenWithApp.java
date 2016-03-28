@@ -61,10 +61,16 @@ public class BaseOpenWithApp implements IJsonBackedObject {
     public String editUrl;
 
     /**
-     * The Post Parameters.
+     * The View Post Parameters.
      */
-    @SerializedName("postParameters")
-    public String postParameters;
+    @SerializedName("viewPostParameters")
+    public String viewPostParameters;
+
+    /**
+     * The Edit Post Parameters.
+     */
+    @SerializedName("editPostParameters")
+    public String editPostParameters;
 
 
     /**
