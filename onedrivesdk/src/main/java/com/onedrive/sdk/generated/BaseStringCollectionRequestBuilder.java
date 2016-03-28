@@ -57,8 +57,4 @@ public class BaseStringCollectionRequestBuilder extends BaseRequestBuilder imple
     public IStringCollectionRequest buildRequest(final List<Option> options) {
         return new StringCollectionRequest(getRequestUrl(), getClient(), options);
     }
-
-    public IStringRequestBuilder byId(final String id) {
-        return new StringRequestBuilder(getRequestUrlWithAdditionalSegment(id), getClient(), getOptions());
-    }
 }

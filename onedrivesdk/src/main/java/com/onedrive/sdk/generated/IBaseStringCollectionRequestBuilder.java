@@ -42,6 +42,4 @@ public interface IBaseStringCollectionRequestBuilder extends IRequestBuilder {
     IStringCollectionRequest buildRequest();
 
     IStringCollectionRequest buildRequest(final List<Option> options);
-
-    IStringRequestBuilder byId(final String id);
 }

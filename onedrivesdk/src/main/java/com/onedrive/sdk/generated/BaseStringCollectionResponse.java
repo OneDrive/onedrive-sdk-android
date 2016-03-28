@@ -90,13 +90,5 @@ public class BaseStringCollectionResponse implements IJsonBackedObject {
     public void setRawObject(final ISerializer serializer, final JsonObject json) {
         mSerializer = serializer;
         mRawObject = json;
-
-
-        if (json.has("value")) {
-            final JsonArray array = json.getAsJsonArray("value");
-            for (int i = 0; i < array.size(); i++) {
-                value.get(i).setRawObject(mSerializer, (JsonObject) array.get(i));
-            }
-        }
     }
 }
