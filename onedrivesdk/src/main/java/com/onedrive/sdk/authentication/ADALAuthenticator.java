@@ -421,7 +421,8 @@ public abstract class ADALAuthenticator implements IAuthenticator {
                 loginSilentWaiter.signal();
             }
         };
-        mAdalContext.acquireTokenSilent(mResourceUrl.get(), getClientId(), mUserId.get(), callback);
+
+        mAdalContext.acquireTokenSilent(mOneDriveServiceInfo.get().serviceResourceId, getClientId(), mUserId.get(), callback);
 
         loginSilentWaiter.waitForSignal();
         //noinspection ThrowableResultOfMethodCallIgnored
