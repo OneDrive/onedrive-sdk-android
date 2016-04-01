@@ -35,8 +35,8 @@ import java.util.*;
 // This file is available for extending, afterwards please submit a pull request.
 
 /**
- * The interface for the Recent Request Builder.
+ * The class for the Shared.
  */
-public interface IRecentRequestBuilder extends IBaseRecentRequestBuilder {
+public class Shared extends BaseShared {
 
 }

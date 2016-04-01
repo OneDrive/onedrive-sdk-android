@@ -54,6 +54,12 @@ public class BaseIdentity implements IJsonBackedObject {
     @SerializedName("id")
     public String id;
 
+    /**
+     * The Thumbnails.
+     */
+    @SerializedName("thumbnails")
+    public ThumbnailSet thumbnails;
+
 
     /**
      * The raw representation of this class

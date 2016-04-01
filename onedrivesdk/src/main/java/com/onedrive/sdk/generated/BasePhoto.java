@@ -84,6 +84,12 @@ public class BasePhoto implements IJsonBackedObject {
     @SerializedName("takenDateTime")
     public java.util.Calendar takenDateTime;
 
+    /**
+     * The Iso.
+     */
+    @SerializedName("iso")
+    public Integer iso;
+
 
     /**
      * The raw representation of this class

@@ -35,18 +35,18 @@ import java.util.*;
 // This file is available for extending, afterwards please submit a pull request.
 
 /**
- * The class for the All Photos Collection Page.
+ * The class for the String Collection Request.
  */
-public class AllPhotosCollectionPage extends BaseAllPhotosCollectionPage implements IAllPhotosCollectionPage {
+public class StringCollectionRequest extends BaseStringCollectionRequest implements IStringCollectionRequest {
 
     /**
-     * A collection page for Item.
+     * The request for this collection of Shared
      *
-     * @param response The serialized BaseAllPhotosCollectionResponse from the OneDrive service
-     * @param builder The request builder for the next collection page
+     * @param requestUrl The request url
+     * @param client The service client
+     * @param options The options for this request
      */
-    public AllPhotosCollectionPage(final BaseAllPhotosCollectionResponse response, final IAllPhotosRequestBuilder builder) {
-        super(response, builder);
+    public StringCollectionRequest(final String requestUrl, final IOneDriveClient client, final List<Option> options) {
+        super(requestUrl, client, options);
     }
-
 }

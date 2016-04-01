@@ -49,16 +49,28 @@ public class BaseSharingInvitation implements IJsonBackedObject {
     public String email;
 
     /**
-     * The Redeemed By.
+     * The Invited By.
      */
-    @SerializedName("redeemedBy")
-    public String redeemedBy;
+    @SerializedName("invitedBy")
+    public IdentitySet invitedBy;
 
     /**
      * The Sign In Required.
      */
     @SerializedName("signInRequired")
     public Boolean signInRequired;
+
+    /**
+     * The Send Invitation Status.
+     */
+    @SerializedName("sendInvitationStatus")
+    public String sendInvitationStatus;
+
+    /**
+     * The Invite Error Resolve Url.
+     */
+    @SerializedName("inviteErrorResolveUrl")
+    public String inviteErrorResolveUrl;
 
 
     /**

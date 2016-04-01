@@ -35,18 +35,8 @@ import java.util.*;
 // This file is available for extending, afterwards please submit a pull request.
 
 /**
- * The class for the All Photos Request Builder.
+ * The interface for the String Collection Page.
  */
-public class AllPhotosRequestBuilder extends BaseAllPhotosRequestBuilder implements IAllPhotosRequestBuilder {
+public interface IStringCollectionPage extends IBaseStringCollectionPage {
 
-    /**
-     * The request builder for this AllPhotos
-     *
-     * @param requestUrl The request url
-     * @param client The service client
-     * @param options The options for this request
-     */
-    public AllPhotosRequestBuilder(final String requestUrl, final IOneDriveClient client, final List<Option> options) {
-        super(requestUrl, client, options);
-    }
 }

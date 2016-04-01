@@ -49,10 +49,10 @@ public class BaseOpenWithSet implements IJsonBackedObject {
     public OpenWithApp web;
 
     /**
-     * The Web Embedded.
+     * The Web Embed.
      */
-    @SerializedName("webEmbedded")
-    public OpenWithApp webEmbedded;
+    @SerializedName("webEmbed")
+    public OpenWithApp webEmbed;
 
 
     /**

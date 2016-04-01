@@ -69,8 +69,6 @@ public interface IBaseItemRequestBuilder extends IRequestBuilder {
 
     ICreateLinkRequestBuilder getCreateLink(final String type);
 
-    IAllPhotosRequestBuilder getAllPhotos();
-
     IDeltaRequestBuilder getDelta(final String token);
 
     ISearchRequestBuilder getSearch(final String q);
