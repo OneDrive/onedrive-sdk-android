@@ -16,14 +16,16 @@ repository {
 
 dependency {
     // Include the sdk as a dependency
-    compile 'com.onedrive.sdk:onedrive-sdk-android:1.1+'
+    compile ('com.onedrive.sdk:onedrive-sdk-android:1.1+') {
+        transitive = false
+    }
 
     // Include the gson dependency
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile ('com.google.code.gson:gson:2.3.1')
 
     // Include supported authentication methods for your application
-    compile 'com.microsoft.services.msa:msa-auth:0.8.4'
-    compile 'com.microsoft.aad:adal:1.1.11'
+    compile ('com.microsoft.services.msa:msa-auth:0.8.+')
+    compile ('com.microsoft.aad:adal:1.1.+')
 }
 ```
 
