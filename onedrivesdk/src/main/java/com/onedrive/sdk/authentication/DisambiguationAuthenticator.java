@@ -22,6 +22,7 @@
 
 package com.onedrive.sdk.authentication;
 
+import com.microsoft.onedrivesdk.BuildConfig;
 import com.onedrive.sdk.concurrency.ICallback;
 import com.onedrive.sdk.concurrency.IExecutors;
 import com.onedrive.sdk.concurrency.SimpleWaiter;
@@ -31,6 +32,9 @@ import com.onedrive.sdk.http.IHttpProvider;
 import com.onedrive.sdk.logger.ILogger;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 
 import java.security.InvalidParameterException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,6 +43,21 @@ import java.util.concurrent.atomic.AtomicReference;
  * Wrapper around the ADAL and MSA authenticators which can disambiguate between them.
  */
 public class DisambiguationAuthenticator implements IAuthenticator {
+
+    /**
+     * The preferences for this authenticator.
+     */
+    private static final String DISAMBIGUATION_AUTHENTICATOR_PREFS = "DisambiguationAuthenticatorPrefs";
+
+    /**
+     * The key for the version code
+     */
+    public static final String VERSION_CODE_KEY = "versionCode";
+
+    /**
+     * The key for the account type
+     */
+    public static final String ACCOUNT_TYPE_KEY = "accountType";
 
     /**
      * The current account info object.
@@ -173,31 +192,41 @@ public class DisambiguationAuthenticator implements IAuthenticator {
             }
         };
 
-        mLogger.logDebug("Creating disambiguation ui, waiting for user to sign in");
-        new DisambiguationRequest(mActivity, disambiguationCallback, mLogger).execute();
-        disambiguationWaiter.waitForSignal();
+        AccountType accountType = getAccountTypeInPreferences();
+        String accountName = null;
+        if (accountType != null) {
+            mLogger.logDebug(String.format("Found saved account information %s type of account", accountType));
+        } else {
+            mLogger.logDebug("Creating disambiguation ui, waiting for user to sign in");
+            new DisambiguationRequest(mActivity, disambiguationCallback, mLogger).execute();
+            disambiguationWaiter.waitForSignal();
 
-        //noinspection ThrowableResultOfMethodCallIgnored
-        if (error.get() != null) {
-            throw error.get();
+            //noinspection ThrowableResultOfMethodCallIgnored
+            if (error.get() != null) {
+                throw error.get();
+            }
+            final DisambiguationResponse disambiguationResponse = response.get();
+            accountType = disambiguationResponse.getAccountType();
+            accountName = disambiguationResponse.getAccount();
         }
-        final DisambiguationResponse disambiguationResponse = response.get();
+
         final IAccountInfo accountInfo;
-        switch (disambiguationResponse.getAccountType()) {
+        switch (accountType) {
             case ActiveDirectory:
-                accountInfo = mADALAuthenticator.login(disambiguationResponse.getAccount());
+                accountInfo = mADALAuthenticator.login(accountName);
                 break;
             case MicrosoftAccount:
-                accountInfo = mMSAAuthenticator.login(disambiguationResponse.getAccount());
+                accountInfo = mMSAAuthenticator.login(accountName);
                 break;
             default:
                 final UnsupportedOperationException unsupportedOperationException
                     = new UnsupportedOperationException("Unrecognized account type "
-                                                        + disambiguationResponse.getAccountType());
+                                                        + accountType);
                 mLogger.logError("Unrecognized account type", unsupportedOperationException);
                 throw unsupportedOperationException;
         }
 
+        setAccountTypeInPreferences(accountType);
         mAccountInfo.set(accountInfo);
         return mAccountInfo.get();
     }
@@ -241,10 +270,17 @@ public class DisambiguationAuthenticator implements IAuthenticator {
         }
 
         mLogger.logDebug("Starting login silent");
+
+        final AccountType accountType = getAccountTypeInPreferences();
+        if (accountType != null) {
+            mLogger.logDebug(String.format("Expecting %s type of account", accountType));
+        }
+
         mLogger.logDebug("Checking MSA");
         IAccountInfo accountInfo = mMSAAuthenticator.loginSilent();
         if (accountInfo != null) {
             mLogger.logDebug("Found account info in MSA");
+            setAccountTypeInPreferences(accountType);
             mAccountInfo.set(accountInfo);
             return accountInfo;
         }
@@ -254,8 +290,9 @@ public class DisambiguationAuthenticator implements IAuthenticator {
         mAccountInfo.set(accountInfo);
         if (accountInfo != null) {
             mLogger.logDebug("Found account info in ADAL");
+            setAccountTypeInPreferences(accountType);
         }
-        return accountInfo;
+        return mAccountInfo.get();
     }
 
     /**
@@ -277,7 +314,7 @@ public class DisambiguationAuthenticator implements IAuthenticator {
             @Override
             public void run() {
                 logout();
-                mExecutors.performOnForeground((Void)null, logoutCallback);
+                mExecutors.performOnForeground((Void) null, logoutCallback);
             }
         });
     }
@@ -296,10 +333,18 @@ public class DisambiguationAuthenticator implements IAuthenticator {
         if (mMSAAuthenticator.getAccountInfo() != null) {
             mLogger.logDebug("Starting logout of MSA account");
             mMSAAuthenticator.logout();
-        } else if (mADALAuthenticator.getAccountInfo() != null) {
+        }
+
+        if (mADALAuthenticator.getAccountInfo() != null) {
             mLogger.logDebug("Starting logout of ADAL account");
             mADALAuthenticator.logout();
         }
+
+        getSharedPreferences()
+                .edit()
+                .clear()
+                .putInt(VERSION_CODE_KEY, BuildConfig.VERSION_CODE)
+                .commit();
     }
 
     /**
@@ -309,5 +354,42 @@ public class DisambiguationAuthenticator implements IAuthenticator {
     @Override
     public IAccountInfo getAccountInfo() {
         return mAccountInfo.get();
+    }
+
+    /**
+     * Gets the shared preferences for this authenticator.
+     * @return The shared preferences.
+     */
+    private SharedPreferences getSharedPreferences() {
+        return mActivity.getSharedPreferences(DISAMBIGUATION_AUTHENTICATOR_PREFS, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Sets the AccountType from SharedPreferences
+     * @param accountType The account type, can be null
+     */
+    private void setAccountTypeInPreferences(@Nullable final AccountType accountType) {
+        if (accountType == null) {
+            return;
+        }
+
+        getSharedPreferences()
+                .edit()
+                .putString(ACCOUNT_TYPE_KEY, accountType.toString())
+                .putInt(VERSION_CODE_KEY, BuildConfig.VERSION_CODE)
+                .commit();
+    }
+
+    /**
+     * Gets the AccountType from SharedPreferences
+     * @return The account type, null if none was found
+     */
+    @Nullable
+    private AccountType getAccountTypeInPreferences() {
+        final String accountTypeString = getSharedPreferences().getString(ACCOUNT_TYPE_KEY, null);
+        if (accountTypeString == null) {
+            return null;
+        }
+        return AccountType.valueOf(accountTypeString);
     }
 }
