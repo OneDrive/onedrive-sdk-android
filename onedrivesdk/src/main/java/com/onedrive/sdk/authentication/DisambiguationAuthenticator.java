@@ -333,7 +333,9 @@ public class DisambiguationAuthenticator implements IAuthenticator {
         if (mMSAAuthenticator.getAccountInfo() != null) {
             mLogger.logDebug("Starting logout of MSA account");
             mMSAAuthenticator.logout();
-        } else if (mADALAuthenticator.getAccountInfo() != null) {
+        }
+
+        if (mADALAuthenticator.getAccountInfo() != null) {
             mLogger.logDebug("Starting logout of ADAL account");
             mADALAuthenticator.logout();
         }
