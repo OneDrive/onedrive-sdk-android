@@ -48,6 +48,16 @@ import java.util.Scanner;
 public class DefaultHttpProvider implements IHttpProvider {
 
     /**
+     * The content type header
+     */
+    static final String ContentTypeHeaderName = "Content-Type";
+
+    /**
+     * The content type for json responses
+     */
+    static final String JsonContentType = "application/json";
+
+    /**
      * The serializer.
      */
     private final ISerializer mSerializer;
@@ -171,10 +181,8 @@ public class DefaultHttpProvider implements IHttpProvider {
                                                       final IProgressCallback<Result> progress)
             throws ClientException {
         final int defaultBufferSize = 4096;
-        final String contentTypeHeaderName = "Content-Type";
         final String contentLengthHeaderName = "Content-Length";
         final String binaryContentType = "application/octet-stream";
-        final String jsonContentType = "application/json";
         final int httpClientErrorResponseCode = 400;
         final int httpNoBodyResponseCode = 204;
         final int httpAcceptedResponseCode = 202;
@@ -203,13 +211,13 @@ public class DefaultHttpProvider implements IHttpProvider {
                 } else if (serializable instanceof byte[]) {
                     mLogger.logDebug("Sending byte[] as request body");
                     bytesToWrite = (byte[]) serializable;
-                    connection.addRequestHeader(contentTypeHeaderName, binaryContentType);
+                    connection.addRequestHeader(ContentTypeHeaderName, binaryContentType);
                     connection.addRequestHeader(contentLengthHeaderName, "" + bytesToWrite.length);
                 } else {
                     mLogger.logDebug("Sending " + serializable.getClass().getName() + " as request body");
                     final String serializeObject = mSerializer.serializeObject(serializable);
                     bytesToWrite = serializeObject.getBytes();
-                    connection.addRequestHeader(contentTypeHeaderName, jsonContentType);
+                    connection.addRequestHeader(ContentTypeHeaderName, JsonContentType);
                     connection.addRequestHeader(contentLengthHeaderName, "" + bytesToWrite.length);
                 }
 
@@ -273,8 +281,8 @@ public class DefaultHttpProvider implements IHttpProvider {
 
                 final Map<String, String> headers = connection.getHeaders();
 
-                final String contentType = headers.get(contentTypeHeaderName);
-                if (contentType.contains(jsonContentType)) {
+                final String contentType = headers.get(ContentTypeHeaderName);
+                if (contentType.contains(JsonContentType)) {
                     mLogger.logDebug("Response json");
                     return handleJsonResponse(in, resultClass);
                 } else {

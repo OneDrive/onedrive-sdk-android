@@ -216,6 +216,7 @@ public class OneDriveServiceException extends ClientException {
                 sb.append(jsonObject.toString(INDENT_SPACES)).append(NEW_LINE);
             } catch (final JSONException ignored) {
                 sb.append("[Warning: Unable to parse error message body]").append(NEW_LINE);
+                sb.append(mError.rawObject.toString()).append(NEW_LINE);
             }
         } else {
             sb.append(TRUNCATION_MARKER).append(NEW_LINE).append(NEW_LINE);
@@ -296,16 +297,26 @@ public class OneDriveServiceException extends ClientException {
 
         final String responseMessage = connection.getResponseMessage();
         final String rawOutput = DefaultHttpProvider.streamToString(connection.getInputStream());
-        OneDriveErrorResponse error;
-        try {
-            error = serializer.deserializeObject(rawOutput, OneDriveErrorResponse.class);
-        } catch (final Exception ex) {
+        OneDriveErrorResponse error = null;
+        Exception parsingException = null;
+
+        if (headers.get(DefaultHttpProvider.ContentTypeHeaderName).contains(DefaultHttpProvider.JsonContentType)) {
+            try {
+                error = serializer.deserializeObject(rawOutput, OneDriveErrorResponse.class);
+            } catch (final Exception ex) {
+                parsingException = ex;
+            }
+        }
+
+        if (error == null) {
             error = new OneDriveErrorResponse();
             error.error = new OneDriveError();
             error.error.code = "Unable to parse error response message";
             error.error.message = "Raw error: " + rawOutput;
-            error.error.innererror = new OneDriveInnerError();
-            error.error.innererror.code = ex.getMessage();
+            if (parsingException != null) {
+                error.error.innererror = new OneDriveInnerError();
+                error.error.innererror.code = parsingException.getMessage();
+            }
         }
 
         if (responseCode == INTERNAL_SERVER_ERROR) {
