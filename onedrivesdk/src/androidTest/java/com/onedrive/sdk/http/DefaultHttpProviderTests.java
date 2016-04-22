@@ -306,7 +306,9 @@ public class DefaultHttpProviderTests extends AndroidTestCase {
 
             @Override
             public Map<String, String> getHeaders() {
-                return new HashMap<>();
+                final HashMap<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
             }
         };
         mProvider.setConnectionFactory(new MockSingleConnectionFactory(new TestDataConnection(data)));
