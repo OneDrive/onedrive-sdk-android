@@ -75,4 +75,8 @@ public class BaseDriveRequestBuilder extends BaseRequestBuilder implements IBase
     public IItemRequestBuilder getSpecial(final String id) {
         return new ItemRequestBuilder(getRequestUrlWithAdditionalSegment("special") + "/" + id, getClient(), null);
     }
+
+    public IRecentRequestBuilder getRecent() {
+        return new RecentRequestBuilder(getRequestUrlWithAdditionalSegment("view.recent"), getClient(), null);
+    }
 }

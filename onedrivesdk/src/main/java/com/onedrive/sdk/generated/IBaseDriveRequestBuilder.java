@@ -54,4 +54,6 @@ public interface IBaseDriveRequestBuilder extends IRequestBuilder {
     IItemRequestBuilder getShared(final String id);
 
     IItemRequestBuilder getSpecial(final String id);
+
+    IRecentRequestBuilder getRecent();
 }
