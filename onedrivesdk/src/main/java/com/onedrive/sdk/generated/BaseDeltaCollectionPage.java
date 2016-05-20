@@ -40,7 +40,7 @@ import com.google.gson.annotations.*;
 /**
  * The class for the Base Delta Collection Page.
  */
-public class BaseDeltaCollectionPage extends BaseCollectionPage<Item, IDeltaRequestBuilder> implements IBaseDeltaCollectionPage {
+public class BaseDeltaCollectionPage extends BaseCollectionPage<DeltaResponse, IDeltaRequestBuilder> implements IBaseDeltaCollectionPage {
 
     /**
      * A collection page for Delta.

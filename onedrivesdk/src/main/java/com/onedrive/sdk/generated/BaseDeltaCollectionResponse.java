@@ -44,7 +44,7 @@ import com.google.gson.annotations.*;
 public class BaseDeltaCollectionResponse implements IJsonBackedObject {
 
     @SerializedName("value")
-    public List<Item> value;
+    public List<DeltaResponse> value;
 
     @SerializedName("@odata.nextLink")
     public String nextLink;

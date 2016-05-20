@@ -39,5 +39,5 @@ import com.google.gson.JsonObject;
 /**
  * The interface for the Base Delta Collection Page.
  */
-public interface IBaseDeltaCollectionPage extends IBaseCollectionPage<Item, IDeltaRequestBuilder> {
+public interface IBaseDeltaCollectionPage extends IBaseCollectionPage<DeltaResponse, IDeltaRequestBuilder> {
 }
