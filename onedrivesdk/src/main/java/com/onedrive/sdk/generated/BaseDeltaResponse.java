@@ -45,8 +45,7 @@ public class BaseDeltaResponse implements IJsonBackedObject {
     /**
      * The Value.
      */
-    @SerializedName("value")
-    public List<Item> value;
+    public transient ItemCollectionPage value;
 
     /**
      * The @delta.token.
