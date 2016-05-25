@@ -81,9 +81,7 @@ public class UrlConnection implements IConnection {
 
     @Override
     public OutputStream getOutputStream() throws IOException {
-        final int defaultBufferSize = 4096;
         mConnection.setDoOutput(true);
-        mConnection.setChunkedStreamingMode(defaultBufferSize);
         return mConnection.getOutputStream();
     }
 
@@ -123,6 +121,11 @@ public class UrlConnection implements IConnection {
     @Override
     public String getRequestMethod() {
         return mConnection.getRequestMethod();
+    }
+
+    @Override
+    public void setContentLength(int length) {
+        mConnection.setFixedLengthStreamingMode(length);
     }
 
     /**
