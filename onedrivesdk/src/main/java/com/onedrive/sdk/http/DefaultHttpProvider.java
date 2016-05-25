@@ -212,13 +212,13 @@ public class DefaultHttpProvider implements IHttpProvider {
                     mLogger.logDebug("Sending byte[] as request body");
                     bytesToWrite = (byte[]) serializable;
                     connection.addRequestHeader(ContentTypeHeaderName, binaryContentType);
-                    connection.addRequestHeader(contentLengthHeaderName, "" + bytesToWrite.length);
+                    connection.setContentLength(bytesToWrite.length);
                 } else {
                     mLogger.logDebug("Sending " + serializable.getClass().getName() + " as request body");
                     final String serializeObject = mSerializer.serializeObject(serializable);
                     bytesToWrite = serializeObject.getBytes();
                     connection.addRequestHeader(ContentTypeHeaderName, JsonContentType);
-                    connection.addRequestHeader(contentLengthHeaderName, "" + bytesToWrite.length);
+                    connection.setContentLength(bytesToWrite.length);
                 }
 
                 // Handle cases where we've got a body to process.

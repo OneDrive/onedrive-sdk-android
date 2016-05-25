@@ -437,6 +437,11 @@ public class DefaultHttpProviderTests extends AndroidTestCase {
         public String getRequestMethod() {
             return null;
         }
+
+        @Override
+        public void setContentLength(int length) {
+
+        }
     }
 
     /**
