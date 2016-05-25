@@ -89,4 +89,6 @@ public interface IConnection {
      * @return The request method.
      */
     String getRequestMethod();
+
+    void setContentLength(int length);
 }
