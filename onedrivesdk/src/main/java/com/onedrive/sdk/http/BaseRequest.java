@@ -125,7 +125,7 @@ public abstract class BaseRequest implements IHttpRequest {
     @Override
     public URL getRequestUrl() {
         Uri baseUrl = Uri.parse(mRequestUrl);
-        final Uri.Builder uriBuilder = baseUrl.buildUpon();
+        final Uri.Builder uriBuilder = baseUrl.buildUpon().encodedPath(baseUrl.getPath());
         for (final QueryOption option : mQueryOptions) {
             uriBuilder.appendQueryParameter(option.getName(), option.getValue());
         }

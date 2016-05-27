@@ -25,8 +25,6 @@ package com.onedrive.sdk.http;
 import com.onedrive.sdk.extensions.IOneDriveClient;
 import com.onedrive.sdk.options.Option;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -96,11 +94,6 @@ public abstract class BaseRequestBuilder implements IRequestBuilder {
      * @return The base url for this request.
      */
     public String getRequestUrlWithAdditionalSegment(final String urlSegment) {
-        try {
-            return mRequestUrl + "/" + URLEncoder.encode(urlSegment, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            mClient.getLogger().logError("urlSegment '" + urlSegment + "' could not be encoded into UTF-8", ex);
-            return mRequestUrl + urlSegment;
-        }
+        return mRequestUrl + "/" + urlSegment;
     }
 }
