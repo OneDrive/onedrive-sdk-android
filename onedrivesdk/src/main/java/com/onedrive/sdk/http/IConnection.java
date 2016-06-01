@@ -90,5 +90,9 @@ public interface IConnection {
      */
     String getRequestMethod();
 
-    void setContentLength(int length);
+    /**
+     * Set the Content-Length header
+     * @param length the length of content
+     */
+    void setContentLength(final int length);
 }

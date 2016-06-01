@@ -50,12 +50,12 @@ public class DefaultHttpProvider implements IHttpProvider {
     /**
      * The content type header
      */
-    static final String ContentTypeHeaderName = "Content-Type";
+    static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
 
     /**
      * The content type for json responses
      */
-    static final String JsonContentType = "application/json";
+    static final String JSON_CONTENT_TYPE = "application/json";
 
     /**
      * The serializer.
@@ -102,6 +102,7 @@ public class DefaultHttpProvider implements IHttpProvider {
 
     /**
      * Gets the serializer for this http provider.
+     *
      * @return The serializer for this provider.
      */
     @Override
@@ -125,7 +126,7 @@ public class DefaultHttpProvider implements IHttpProvider {
                                     final Body serializable) {
         final IProgressCallback<Result> progressCallback;
         if (callback instanceof IProgressCallback) {
-            progressCallback = (IProgressCallback<Result>)callback;
+            progressCallback = (IProgressCallback<Result>) callback;
         } else {
             progressCallback = null;
         }
@@ -135,10 +136,10 @@ public class DefaultHttpProvider implements IHttpProvider {
             public void run() {
                 try {
                     mExecutors.performOnForeground(sendRequestInternal(request,
-                                                                       resultClass,
-                                                                       serializable,
-                                                                       progressCallback),
-                                                   callback);
+                            resultClass,
+                            serializable,
+                            progressCallback),
+                            callback);
                 } catch (final ClientException e) {
                     mExecutors.performOnForeground(e, callback);
                 }
@@ -211,13 +212,13 @@ public class DefaultHttpProvider implements IHttpProvider {
                 } else if (serializable instanceof byte[]) {
                     mLogger.logDebug("Sending byte[] as request body");
                     bytesToWrite = (byte[]) serializable;
-                    connection.addRequestHeader(ContentTypeHeaderName, binaryContentType);
+                    connection.addRequestHeader(CONTENT_TYPE_HEADER_NAME, binaryContentType);
                     connection.setContentLength(bytesToWrite.length);
                 } else {
                     mLogger.logDebug("Sending " + serializable.getClass().getName() + " as request body");
                     final String serializeObject = mSerializer.serializeObject(serializable);
                     bytesToWrite = serializeObject.getBytes();
-                    connection.addRequestHeader(ContentTypeHeaderName, JsonContentType);
+                    connection.addRequestHeader(CONTENT_TYPE_HEADER_NAME, JSON_CONTENT_TYPE);
                     connection.setContentLength(bytesToWrite.length);
                 }
 
@@ -235,24 +236,24 @@ public class DefaultHttpProvider implements IHttpProvider {
                         writtenSoFar = writtenSoFar + toWrite;
                         if (progress != null) {
                             mExecutors.performOnForeground(writtenSoFar, bytesToWrite.length,
-                                                              progress);
+                                    progress);
                         }
-                   } while (toWrite > 0);
+                    } while (toWrite > 0);
                     bos.close();
                 }
 
                 mLogger.logDebug(String.format("Response code %d, %s",
-                                               connection.getResponseCode(),
-                                               connection.getResponseMessage()));
+                        connection.getResponseCode(),
+                        connection.getResponseMessage()));
                 if (connection.getResponseCode() >= httpClientErrorResponseCode
-                    && !isAsyncOperation(resultClass)) {
+                        && !isAsyncOperation(resultClass)) {
                     mLogger.logDebug("Handling error response");
                     in = connection.getInputStream();
                     handleErrorResponse(request, serializable, connection);
                 }
 
                 if (connection.getResponseCode() == httpNoBodyResponseCode
-                    || connection.getResponseCode() == httpNotModified) {
+                        || connection.getResponseCode() == httpNotModified) {
                     mLogger.logDebug("Handling response with no body");
                     return null;
                 }
@@ -273,7 +274,7 @@ public class DefaultHttpProvider implements IHttpProvider {
                     }
                     in = new BufferedInputStream(connection.getInputStream());
                     final Result result = handleJsonResponse(in, resultClass);
-                    ((AsyncOperationStatus)result).seeOther = connection.getHeaders().get("Location");
+                    ((AsyncOperationStatus) result).seeOther = connection.getHeaders().get("Location");
                     return result;
                 }
 
@@ -281,8 +282,8 @@ public class DefaultHttpProvider implements IHttpProvider {
 
                 final Map<String, String> headers = connection.getHeaders();
 
-                final String contentType = headers.get(ContentTypeHeaderName);
-                if (contentType.contains(JsonContentType)) {
+                final String contentType = headers.get(CONTENT_TYPE_HEADER_NAME);
+                if (contentType.contains(JSON_CONTENT_TYPE)) {
                     mLogger.logDebug("Response json");
                     return handleJsonResponse(in, resultClass);
                 } else {
@@ -306,8 +307,8 @@ public class DefaultHttpProvider implements IHttpProvider {
             throw ex;
         } catch (final Exception ex) {
             final ClientException clientException = new ClientException("Error during http request",
-                                                                        ex,
-                                                                        OneDriveErrorCodes.GeneralException);
+                    ex,
+                    OneDriveErrorCodes.GeneralException);
             mLogger.logError("Error during http request", clientException);
             throw clientException;
         }
@@ -315,6 +316,7 @@ public class DefaultHttpProvider implements IHttpProvider {
 
     /**
      * Checks if the given class is an async operation.
+     *
      * @param resultClass The class to check.
      * @return true if the class is an async operation.
      */
@@ -335,11 +337,12 @@ public class DefaultHttpProvider implements IHttpProvider {
                                             final IConnection connection)
             throws IOException {
         throw OneDriveServiceException.createFromConnection(request, serializable, mSerializer,
-                                                               connection);
+                connection);
     }
 
     /**
      * Handles the cause where the response is a binary stream.
+     *
      * @param in The input stream from the response.
      * @return The input stream to return to the caller.
      */
@@ -365,6 +368,7 @@ public class DefaultHttpProvider implements IHttpProvider {
 
     /**
      * Sets the connection factory for this provider.
+     *
      * @param factory The new factory.
      */
     void setConnectionFactory(final IConnectionFactory factory) {
@@ -373,6 +377,7 @@ public class DefaultHttpProvider implements IHttpProvider {
 
     /**
      * Reads in a stream and converts it into a string.
+     *
      * @param input The response body stream.
      * @return The string result.
      */

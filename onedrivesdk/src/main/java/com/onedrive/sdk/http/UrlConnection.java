@@ -124,7 +124,7 @@ public class UrlConnection implements IConnection {
     }
 
     @Override
-    public void setContentLength(int length) {
+    public void setContentLength(final int length) {
         mConnection.setFixedLengthStreamingMode(length);
     }
 
