@@ -300,8 +300,8 @@ public class OneDriveServiceException extends ClientException {
         OneDriveErrorResponse error = null;
         Exception parsingException = null;
 
-        final String contentType = headers.get(DefaultHttpProvider.ContentTypeHeaderName);
-        if (contentType != null && contentType.contains(DefaultHttpProvider.JsonContentType)) {
+        final String contentType = headers.get(DefaultHttpProvider.CONTENT_TYPE_HEADER_NAME);
+        if (contentType != null && contentType.contains(DefaultHttpProvider.JSON_CONTENT_TYPE)) {
             try {
                 error = serializer.deserializeObject(rawOutput, OneDriveErrorResponse.class);
             } catch (final Exception ex) {

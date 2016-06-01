@@ -106,10 +106,10 @@ public abstract class BaseRequest implements IHttpRequest {
         if (options != null) {
             for (final Option option : options) {
                 if (option instanceof HeaderOption) {
-                    mHeadersOptions.add((HeaderOption)option);
+                    mHeadersOptions.add((HeaderOption) option);
                 }
                 if (option instanceof QueryOption) {
-                    mQueryOptions.add((QueryOption)option);
+                    mQueryOptions.add((QueryOption) option);
                 }
             }
         }
@@ -120,12 +120,15 @@ public abstract class BaseRequest implements IHttpRequest {
 
     /**
      * Gets the request url.
+     *
      * @return The request url.
      */
     @Override
     public URL getRequestUrl() {
         Uri baseUrl = Uri.parse(mRequestUrl);
-        final Uri.Builder uriBuilder = new Uri.Builder().scheme(baseUrl.getScheme()).encodedAuthority(baseUrl.getEncodedAuthority());
+        final Uri.Builder uriBuilder = new Uri.Builder()
+                .scheme(baseUrl.getScheme())
+                .encodedAuthority(baseUrl.getEncodedAuthority());
 
         for (final String segment : baseUrl.getPathSegments()) {
             uriBuilder.appendPath(segment);
@@ -145,6 +148,7 @@ public abstract class BaseRequest implements IHttpRequest {
 
     /**
      * Gets the http method.
+     *
      * @return The http method.
      */
     @Override
@@ -154,6 +158,7 @@ public abstract class BaseRequest implements IHttpRequest {
 
     /**
      * Gets the headers.
+     *
      * @return The headers.
      */
     @Override
@@ -205,6 +210,7 @@ public abstract class BaseRequest implements IHttpRequest {
 
     /**
      * Gets the query options for this request.
+     *
      * @return The query options for this request.
      */
     public List<QueryOption> getQueryOptions() {
@@ -213,6 +219,7 @@ public abstract class BaseRequest implements IHttpRequest {
 
     /**
      * Gets the full list of options for this request.
+     *
      * @return The full list of options for this request.
      */
     public List<Option> getOptions() {
@@ -224,6 +231,7 @@ public abstract class BaseRequest implements IHttpRequest {
 
     /**
      * Sets the http method.
+     *
      * @param httpMethod The http method.
      */
     public void setHttpMethod(final HttpMethod httpMethod) {
@@ -232,6 +240,7 @@ public abstract class BaseRequest implements IHttpRequest {
 
     /**
      * Gets the client.
+     *
      * @return The client.
      */
     public IOneDriveClient getClient() {
@@ -240,6 +249,7 @@ public abstract class BaseRequest implements IHttpRequest {
 
     /**
      * Gets the response type.
+     *
      * @return The response type.
      */
     public Class getResponseType() {
