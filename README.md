@@ -39,9 +39,9 @@ Register your application by following [these](https://dev.onedrive.com/app-regi
 
 The OneDrive SDK for Android comes with Authenticator objects that have already been initialized for OneDrive with Microsoft accounts and Azure Activity Directory accounts. Replace the current settings with the required settings to start authenticating.
 
-Application that authenicate via MSA need to have a [scope of access](https://github.com/OneDrive/onedrive-api-docs/blob/master/auth/msa_oauth.md#authentication-scopes) defined to use features on OneDrive.  If your application is being used in for OneDrive for business AAD will need the [administrators consent](https://dev.onedrive.com/app-registration.htm) for your application to communicate with OneDrive. 
+Application that authenicate via MSA need to have a [scope of access](https://github.com/OneDrive/onedrive-api-docs/blob/master/auth/msa_oauth.md#authentication-scopes) defined to use features on OneDrive.  If your application is being used in for OneDrive for business AAD will need the [administrators consent](https://dev.onedrive.com/app-registration.htm) for your application to communicate with OneDrive.
 
-Note that your _msa-client-id_ should look like `0000000000000000` and _adal-client-id_ should look like `00000000-0000-0000-0000-000000000000`.
+Note that your _msa-client-id_ and _adal-client-id_ should look be in GUID format like `00000000-0000-0000-0000-000000000000`. For legacy MSA application, the _msa-client-id_ should look like `0000000000000000`.
 
 ```java
 final MSAAuthenticator msaAuthenticator = new MSAAuthenticator() {
