@@ -27,7 +27,7 @@ To get an item, you construct request builders `getDrive` and `getItems`, you ca
 ```java
 //Enter the itemId here.
 final String itemId = "0000000000000000000000";
-final ICallback<Item> callback = new ICallback<Item> {
+final ICallback<Item> callback = new ICallback<Item>() {
     @Override
     public void success(final Item result) {
         Toast.makeText(getActivity(), "Got item", Toast.LENGTH_LONG).show();
@@ -58,9 +58,9 @@ To delete an item, you construct request builders to get the item you want to de
 
 ```java
 final String itemId = "0000000000000000000000";
-final ICallback<Item> callback = new ICallback<Item> {
+final ICallback<Void> callback = new ICallback<Void>() {
     @Override
-    public void success(final Item result) {
+    public void success(final Void ignored) {
         Toast.makeText(getActivity(), "Deleted item", Toast.LENGTH_LONG).show();
     }
     ...
@@ -158,7 +158,7 @@ final Item newLocation = new Item();
 newLocation.parentReference = new ItemReference();
 newLocation.parentReference.id = newParentId;
 
-final ICallback<Item> callback = new ICallback<Item> {
+final ICallback<Item> callback = new ICallback<Item>() {
     @Override
     public void success(final Item result) {
         Toast.makeText(getActivity(), "Update the item location", Toast.LENGTH_LONG).show();
@@ -195,7 +195,7 @@ final String itemId = "0000000000000000000000";
 final Item newName = new Item();
 newName.name = newItemName;
 
-final ICallback<Item> callback = new ICallback<Item> {
+final ICallback<Item> callback = new ICallback<Item>() {
     @Override
     public void success(final Item result) {
         Toast.makeText(getActivity(), "Update the item name", Toast.LENGTH_LONG).show();
