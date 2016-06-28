@@ -128,7 +128,8 @@ public abstract class BaseRequest implements IHttpRequest {
         Uri baseUrl = Uri.parse(mRequestUrl);
         final Uri.Builder uriBuilder = new Uri.Builder()
                 .scheme(baseUrl.getScheme())
-                .encodedAuthority(baseUrl.getEncodedAuthority());
+                .encodedAuthority(baseUrl.getEncodedAuthority())
+                .encodedQuery(baseUrl.getEncodedQuery());
 
         for (final String segment : baseUrl.getPathSegments()) {
             uriBuilder.appendPath(segment);
