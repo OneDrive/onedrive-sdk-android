@@ -22,7 +22,7 @@ public class BaseRequestTests extends AndroidTestCase{
     private IOneDriveClient mockClient;
     private BaseRequest mRequest;
 
-    private final String baseUrl = "https://localhost:8080/";
+    private final String baseUrl = "https://localhost:8080";
     private final String[] testingSegments = { "Hello World", "你好世界", "Καλημέρα κόσμε", "안녕하세요", "コンニチハ", "แผ่นดินฮั่นเสื่อมโทรมแสนสังเวช" };
 
     @Override
@@ -31,11 +31,9 @@ public class BaseRequestTests extends AndroidTestCase{
         StringBuilder sb = new StringBuilder(baseUrl);
 
         for (String segment : testingSegments) {
-            sb.append(segment);
             sb.append("/");
+            sb.append(segment);
         }
-
-        sb.deleteCharAt(sb.length()-1);
 
         mRequest = new BaseRequest(sb.toString(), mockClient, /*options:*/ null, null) {
             @Override
@@ -44,7 +42,7 @@ public class BaseRequestTests extends AndroidTestCase{
             }
         };
     }
-    
+
     public void testUrlEncoded() throws Exception {
         URL requestUrl = mRequest.getRequestUrl();
         final Uri.Builder expectBuilder = Uri.parse(baseUrl).buildUpon();
