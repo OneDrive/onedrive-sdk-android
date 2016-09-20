@@ -157,7 +157,7 @@ public class OneDriveClient extends BaseOneDriveClient implements IOneDriveClien
          * @param activity The activity the UI should be from
          * @throws ClientException if there was an exception creating the client
          */
-        public IOneDriveClient loginAndBuildClient(final Activity activity) throws ClientException {
+        private IOneDriveClient loginAndBuildClient(final Activity activity) throws ClientException {
             mClient.validate();
 
             mClient.getAuthenticator()
