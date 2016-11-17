@@ -29,6 +29,9 @@ import com.onedrive.sdk.concurrency.IProgressCallback;
 import com.onedrive.sdk.core.ClientException;
 import com.onedrive.sdk.core.OneDriveErrorCodes;
 import com.onedrive.sdk.extensions.AsyncOperationStatus;
+import com.onedrive.sdk.extensions.Item;
+import com.onedrive.sdk.extensions.UploadSession;
+import com.onedrive.sdk.extensions.ChunkedUploadResult;
 import com.onedrive.sdk.logger.ILogger;
 import com.onedrive.sdk.logger.LoggerLevel;
 import com.onedrive.sdk.serializer.ISerializer;
@@ -185,6 +188,7 @@ public class DefaultHttpProvider implements IHttpProvider {
         final String contentLengthHeaderName = "Content-Length";
         final String binaryContentType = "application/octet-stream";
         final int httpClientErrorResponseCode = 400;
+        final int httpCreatedResponseCode = 201;
         final int httpNoBodyResponseCode = 204;
         final int httpAcceptedResponseCode = 202;
         final int httpSeeOtherResponseCode = 303;
@@ -247,9 +251,19 @@ public class DefaultHttpProvider implements IHttpProvider {
                         connection.getResponseMessage()));
                 if (connection.getResponseCode() >= httpClientErrorResponseCode
                         && !isAsyncOperation(resultClass)) {
-                    mLogger.logDebug("Handling error response");
-                    in = connection.getInputStream();
-                    handleErrorResponse(request, serializable, connection);
+                    if (isUploadSession(resultClass)) {
+                        mLogger.logDebug("Handing error when upload chunk");
+
+                        return (Result) new ChunkedUploadResult(
+                                OneDriveServiceException.createFromConnection(request,
+                                        serializable,
+                                        mSerializer,
+                                        connection));
+                    } else {
+                        mLogger.logDebug("Handling error response");
+                        in = connection.getInputStream();
+                        handleErrorResponse(request, serializable, connection);
+                    }
                 }
 
                 if (connection.getResponseCode() == httpNoBodyResponseCode
@@ -264,6 +278,13 @@ public class DefaultHttpProvider implements IHttpProvider {
                         //noinspection unchecked
                         return (Result) new AsyncMonitorLocation(connection.getHeaders().get("Location"));
                     }
+
+                    if (resultClass == ChunkedUploadResult.class) {
+                        in = new BufferedInputStream(connection.getInputStream());
+                        final UploadSession seesion = handleJsonResponse(in, UploadSession.class);
+
+                        return (Result) new ChunkedUploadResult(seesion);
+                    }
                 }
 
                 if (isAsyncOperation(resultClass)) {
@@ -276,6 +297,16 @@ public class DefaultHttpProvider implements IHttpProvider {
                     final Result result = handleJsonResponse(in, resultClass);
                     ((AsyncOperationStatus) result).seeOther = connection.getHeaders().get("Location");
                     return result;
+                }
+
+                if (isUploadSession(resultClass)) {
+                    mLogger.logDebug("Handling upload session completed");
+                    in = new BufferedInputStream(connection.getInputStream());
+                    if (connection.getResponseCode() == httpCreatedResponseCode) {
+                        Item item = this.handleJsonResponse(in, Item.class);
+
+                        return (Result) new ChunkedUploadResult(item);
+                    }
                 }
 
                 in = new BufferedInputStream(connection.getInputStream());
@@ -322,6 +353,15 @@ public class DefaultHttpProvider implements IHttpProvider {
      */
     private boolean isAsyncOperation(final Class resultClass) {
         return resultClass == AsyncOperationStatus.class;
+    }
+
+    /**
+     * Checks if the given class is a chunk upload operation.
+     * @param resultClass The class to check.
+     * @return true is the class is a chunk upload opertion.
+     */
+    private boolean isUploadSession(final Class resultClass) {
+        return resultClass == ChunkedUploadResult.class;
     }
 
     /**

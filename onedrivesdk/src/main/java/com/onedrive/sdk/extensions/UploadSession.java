@@ -22,15 +22,9 @@
 
 package com.onedrive.sdk.extensions;
 
-import com.onedrive.sdk.concurrency.*;
-import com.onedrive.sdk.core.*;
-import com.onedrive.sdk.extensions.*;
-import com.onedrive.sdk.http.*;
 import com.onedrive.sdk.generated.*;
-import com.onedrive.sdk.options.*;
-import com.onedrive.sdk.serializer.*;
 
-import java.util.*;
+import java.io.InputStream;
 
 // This file is available for extending, afterwards please submit a pull request.
 
@@ -38,5 +32,7 @@ import java.util.*;
  * The class for the Upload Session.
  */
 public class UploadSession extends BaseUploadSession {
-
+    public ChunkedUploadProvider createUploadProvider(IOneDriveClient client, InputStream input, int size) {
+        return new ChunkedUploadProvider(this, client, input, size);
+    }
 }

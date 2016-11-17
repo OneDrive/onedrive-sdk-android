@@ -93,7 +93,7 @@ public class BaseItemRequestBuilder extends BaseRequestBuilder implements IBaseI
     }
 
     public ICreateSessionRequestBuilder getCreateSession(final ChunkedUploadSessionDescriptor item) {
-        return new CreateSessionRequestBuilder(getRequestUrlWithAdditionalSegment("upload.createSession"), getClient(), null, item);
+        return new CreateSessionRequestBuilder(getRequestUrlWithAdditionalSegment("action.createUploadSession"), getClient(), null, item);
     }
 
     public ICopyRequestBuilder getCopy(final String name, final ItemReference parentReference) {
