@@ -20,16 +20,21 @@
 // THE SOFTWARE.
 // ------------------------------------------------------------------------------
 
-package com.onedrive.sdk.extensions;
+package com.onedrive.sdk.concurrency;
 
 import com.onedrive.sdk.core.ClientException;
 import com.onedrive.sdk.core.OneDriveErrorCodes;
+import com.onedrive.sdk.extensions.ChunkedUploadResult;
+import com.onedrive.sdk.extensions.IOneDriveClient;
 import com.onedrive.sdk.http.BaseRequest;
 import com.onedrive.sdk.http.HttpMethod;
 import com.onedrive.sdk.options.Option;
 
 import java.util.List;
 
+/**
+ * The chunk upload request.
+ */
 public class ChunkedUploadRequest {
 
     /**
@@ -41,6 +46,11 @@ public class ChunkedUploadRequest {
      * Content Range value format.
      */
     private static final String CONTENT_RANGE_FORMAT = "bytes %1$d-%2$d/%3$d";
+
+    /**
+     * The seconds for retry delay.
+     */
+    private static final int RETRY_DELAY = 2 * 1000;
 
     /**
      * The chunk data sent to the server.
@@ -87,26 +97,37 @@ public class ChunkedUploadRequest {
         this.mMaxRetry = maxRetry;
         this.mBaseRequest = new BaseRequest(requestUrl, client, options, ChunkedUploadResult.class) { };
         this.mBaseRequest.setHttpMethod(HttpMethod.PUT);
-        this.mBaseRequest.addHeader(CONTENT_RANGE_HEADER_NAME, String.format(CONTENT_RANGE_FORMAT, beginIndex, beginIndex + chunkSize - 1, totalLenth));
+        this.mBaseRequest.addHeader(CONTENT_RANGE_HEADER_NAME,
+                                    String.format(
+                                            CONTENT_RANGE_FORMAT,
+                                            beginIndex,
+                                            beginIndex + chunkSize - 1,
+                                            totalLenth));
     }
 
     /**
      * Upload a chunk with tries.
      * @return The upload result.
+     * @param responseHandler The handler handle http response.
+     * @param <UploadType> The upload item type.
      */
-    public ChunkedUploadResult upload() {
+    public <UploadType> ChunkedUploadResult upload(
+            final ChunkedUploadResponseHandler<UploadType> responseHandler) {
         while (this.mRetryCount < this.mMaxRetry) {
             try {
-                Thread.sleep(2000 * this.mRetryCount * this.mRetryCount);
-            } catch (InterruptedException e) {
+                Thread.sleep(RETRY_DELAY * this.mRetryCount * this.mRetryCount);
+            } catch (final InterruptedException e) {
                 this.mBaseRequest.getClient().getLogger().logError("Exception while waiting upload file retry", e);
             }
 
             ChunkedUploadResult result = null;
 
             try {
-                result = this.mBaseRequest.getClient().getHttpProvider().send(mBaseRequest, ChunkedUploadResult.class, this.mData);
-            } catch (ClientException e) {
+                result = this.mBaseRequest
+                        .getClient()
+                        .getHttpProvider()
+                        .send(mBaseRequest, ChunkedUploadResult.class, this.mData, responseHandler);
+            } catch (final ClientException e) {
                 this.mBaseRequest.getClient().getLogger().logDebug("Request failed with, retry if necessary.");
             }
 
@@ -117,6 +138,8 @@ public class ChunkedUploadRequest {
             this.mRetryCount++;
         }
 
-        return new ChunkedUploadResult(new ClientException("Upload session failed to many times." , null, OneDriveErrorCodes.UploadSessionIncomplete));
+        return new ChunkedUploadResult(
+                new ClientException("Upload session failed to many times." , null,
+                                    OneDriveErrorCodes.UploadSessionIncomplete));
     }
 }

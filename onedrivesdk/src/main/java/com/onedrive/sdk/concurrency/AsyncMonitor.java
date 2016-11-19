@@ -51,6 +51,11 @@ public class AsyncMonitor<T> {
     private final ResultGetter<T> mResultGetter;
 
     /**
+     * The monitor response handler.
+     */
+    private final AsyncMonitorResponseHandler mHandler;
+
+    /**
      * Create a new async monitor.
      * @param client The client.
      * @param monitorLocation The monitor location.
@@ -59,9 +64,10 @@ public class AsyncMonitor<T> {
     public AsyncMonitor(final IOneDriveClient client,
                         final AsyncMonitorLocation monitorLocation,
                         final ResultGetter<T> resultGetter) {
-        mClient = client;
-        mMonitorLocation = monitorLocation;
-        mResultGetter = resultGetter;
+        this.mClient = client;
+        this.mMonitorLocation = monitorLocation;
+        this.mResultGetter = resultGetter;
+        this.mHandler = new AsyncMonitorResponseHandler();
     }
 
     /**
@@ -69,7 +75,7 @@ public class AsyncMonitor<T> {
      * @param callback The callback.
      */
     public void getStatus(final ICallback<AsyncOperationStatus> callback) {
-        mClient.getExecutors().performOnBackground(new Runnable() {
+        this.mClient.getExecutors().performOnBackground(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -88,14 +94,15 @@ public class AsyncMonitor<T> {
      */
     public AsyncOperationStatus getStatus() throws ClientException {
         final BaseRequest monitorStatusRequest = new BaseRequest(mMonitorLocation.getLocation(),
-                                                                 mClient,
+                                                                 this.mClient,
                                                                  /* options */ null,
                                                                  /* response class */ null) { };
         monitorStatusRequest.setHttpMethod(HttpMethod.GET);
 
-        return mClient.getHttpProvider().send(monitorStatusRequest,
-                                              AsyncOperationStatus.class,
-                                              /* serialization object*/ null);
+        return this.mClient.getHttpProvider().send(monitorStatusRequest,
+                                                   AsyncOperationStatus.class,
+                                                   /* serialization object*/ null,
+                                                   this.mHandler);
     }
 
     /**

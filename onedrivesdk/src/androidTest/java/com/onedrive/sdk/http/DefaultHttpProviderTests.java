@@ -23,13 +23,16 @@
 package com.onedrive.sdk.http;
 
 import com.onedrive.sdk.concurrency.AsyncMonitorLocation;
+import com.onedrive.sdk.concurrency.ChunkedUploadResponseHandler;
 import com.onedrive.sdk.concurrency.IProgressCallback;
 import com.onedrive.sdk.concurrency.MockExecutors;
 import com.onedrive.sdk.core.ClientException;
 import com.onedrive.sdk.core.OneDriveErrorCodes;
 import com.onedrive.sdk.extensions.AsyncOperationStatus;
+import com.onedrive.sdk.extensions.ChunkedUploadResult;
 import com.onedrive.sdk.extensions.Drive;
 import com.onedrive.sdk.extensions.Item;
+import com.onedrive.sdk.extensions.UploadSession;
 import com.onedrive.sdk.logger.MockLogger;
 import com.onedrive.sdk.serializer.MockSerializer;
 
@@ -40,6 +43,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -380,6 +384,113 @@ public class DefaultHttpProviderTests extends AndroidTestCase {
 
         assertEquals(expectedLocation, monitorLocation.getLocation());
         assertEquals(1, mInterceptor.getInterceptionCount());
+    }
+
+    public void testUploadReturnNextSession() throws  Exception {
+        final String expectedLocation = "http://localhost/up/uploadlocation";
+        final byte[] chunk = new byte[100];
+        final UploadSession<Item> toSerialize = new UploadSession<Item>();
+        toSerialize.uploadUrl = expectedLocation;
+        toSerialize.nextExpectedRanges = Arrays.asList("100-199");
+        setDefaultHttpProvider(toSerialize);
+
+        final ChunkedUploadResponseHandler<Item> handler = new ChunkedUploadResponseHandler(Item.class);
+
+        final ITestData data = new ITestData() {
+            @Override
+            public int getRequestCode() {
+                return 202;
+            }
+
+            @Override
+            public String getJsonResponse() {
+                return "{ }";
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                final HashMap<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        mProvider.setConnectionFactory(new MockSingleConnectionFactory(new TestDataConnection(data)));
+        ChunkedUploadResult result = mProvider.send(new MockRequest(), ChunkedUploadResult.class, chunk, handler);
+
+        assertTrue(result.chunkCompleted());
+        assertEquals(result.getSession(), toSerialize);
+    }
+
+    public void testUploadReturnUploadedItem() throws  Exception {
+        final String expectedLocation = "http://localhost/up/uploadlocation";
+        final byte[] chunk = new byte[30];
+        final Item toSerialize = new Item();
+        toSerialize.id = "abc!123";
+        setDefaultHttpProvider(toSerialize);
+
+        final ChunkedUploadResponseHandler<Item> handler = new ChunkedUploadResponseHandler(Item.class);
+
+        final ITestData data = new ITestData() {
+            @Override
+            public int getRequestCode() {
+                return 201;
+            }
+
+            @Override
+            public String getJsonResponse() {
+                return "{ }";
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                final HashMap<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        mProvider.setConnectionFactory(new MockSingleConnectionFactory(new TestDataConnection(data)));
+        ChunkedUploadResult result = mProvider.send(new MockRequest(), ChunkedUploadResult.class, chunk, handler);
+
+        assertTrue(result.uploadCompleted());
+        assertEquals(result.getSession(), toSerialize);
+    }
+
+    public void testUploadReturnError() throws  Exception {
+        final String expectedLocation = "http://localhost/up/uploadlocation";
+        final byte[] chunk = new byte[30];
+        final OneDriveErrorCodes errorCode = OneDriveErrorCodes.UploadSessionFailed;
+        final OneDriveError toSerialize = new OneDriveError();
+        toSerialize.code = errorCode.toString();
+        setDefaultHttpProvider(toSerialize);
+
+        final ChunkedUploadResponseHandler<Item> handler = new ChunkedUploadResponseHandler(Item.class);
+
+        final ITestData data = new ITestData() {
+            @Override
+            public int getRequestCode() {
+                return 500;
+            }
+
+            @Override
+            public String getJsonResponse() {
+                return "{ }";
+            }
+
+            @Override
+            public Map<String, String> getHeaders() {
+                final HashMap<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        mProvider.setConnectionFactory(new MockSingleConnectionFactory(new TestDataConnection(data)));
+        ChunkedUploadResult result = mProvider.send(new MockRequest(), ChunkedUploadResult.class, chunk, handler);
+
+        assertFalse(result.chunkCompleted());
+        assertTrue(result.getError().isError(errorCode));
     }
 
     /**

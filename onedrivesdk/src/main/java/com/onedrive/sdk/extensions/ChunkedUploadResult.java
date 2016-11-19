@@ -24,19 +24,16 @@ package com.onedrive.sdk.extensions;
 
 import com.onedrive.sdk.core.ClientException;
 import com.onedrive.sdk.core.OneDriveErrorCodes;
-import com.onedrive.sdk.extensions.Item;
-import com.onedrive.sdk.extensions.UploadSession;
 import com.onedrive.sdk.http.OneDriveServiceException;
 
 /**
  * Wrapper class for different upload response from server.
  */
-public class ChunkedUploadResult {
-
+public class ChunkedUploadResult<UploadType> {
     /**
      * The uploaded item response.
      */
-    private final Item mItem;
+    private final UploadType mUploadedItem;
 
     /**
      * The next session response.
@@ -50,10 +47,10 @@ public class ChunkedUploadResult {
 
     /**
      * Construct result with item created.
-     * @param createdItem The created item.
+     * @param uploaded The created item.
      */
-    public ChunkedUploadResult(Item createdItem) {
-        this.mItem = createdItem;
+    public ChunkedUploadResult(UploadType uploaded) {
+        this.mUploadedItem = uploaded;
         this.mSession = null;
         this.mError = null;
     }
@@ -64,7 +61,7 @@ public class ChunkedUploadResult {
      */
     public ChunkedUploadResult(UploadSession session) {
         this.mSession = session;
-        this.mItem = null;
+        this.mUploadedItem = null;
         this.mError = null;
     }
 
@@ -74,7 +71,7 @@ public class ChunkedUploadResult {
      */
     public ChunkedUploadResult(ClientException error) {
         this.mError = error;
-        this.mItem = null;
+        this.mUploadedItem = null;
         this.mSession = null;
     }
 
@@ -91,7 +88,7 @@ public class ChunkedUploadResult {
      * @return true if current chunk upload is completed.
      */
     public boolean chunkCompleted() {
-        return this.mItem != null || this.mSession != null;
+        return this.mUploadedItem != null || this.mSession != null;
     }
 
     /**
@@ -99,7 +96,7 @@ public class ChunkedUploadResult {
      * @return true if the response is a an item.
      */
     public boolean uploadCompleted() {
-        return this.mItem != null;
+        return this.mUploadedItem != null;
     }
 
     /**
@@ -114,8 +111,8 @@ public class ChunkedUploadResult {
      * Get the uploaded item.
      * @return The item.
      */
-    public Item getItem() {
-        return this.mItem;
+    public UploadType getItem() {
+        return this.mUploadedItem;
     }
 
     /**

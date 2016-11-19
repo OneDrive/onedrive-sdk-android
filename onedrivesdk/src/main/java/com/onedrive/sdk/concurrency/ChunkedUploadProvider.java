@@ -20,9 +20,11 @@
 // THE SOFTWARE.
 // ------------------------------------------------------------------------------
 
-package com.onedrive.sdk.extensions;
+package com.onedrive.sdk.concurrency;
 
-import com.onedrive.sdk.concurrency.IProgressCallback;
+import com.onedrive.sdk.extensions.ChunkedUploadResult;
+import com.onedrive.sdk.extensions.IOneDriveClient;
+import com.onedrive.sdk.extensions.UploadSession;
 import com.onedrive.sdk.options.Option;
 
 import java.io.IOException;
@@ -32,8 +34,10 @@ import java.util.List;
 
 /**
  * ChunkedUpload service provider.
+ *
+ * @param <UploadType> The upload item type.
  */
-public class ChunkedUploadProvider {
+public class ChunkedUploadProvider<UploadType> {
 
     /**
      * The default chunk size for upload. Currently set to 5 MiB.
@@ -77,18 +81,29 @@ public class ChunkedUploadProvider {
     private final int mStreamSize;
 
     /**
+     * The upload response handler.
+     */
+    private final ChunkedUploadResponseHandler<UploadType> mResponseHandler;
+
+    /**
      * The counter for how many bytes read from input stream.
      */
     private int mReadSoFar;
 
     /**
      * Create the ChunkedUploadProvider
-     * @param uploadSession the initial upload session.
-     * @param client the onedrive client.
-     * @param inputStream the input stream.
-     * @param streamSize the stream size.
+     *
+     * @param uploadSession The initial upload session.
+     * @param client        The onedrive client.
+     * @param inputStream   The input stream.
+     * @param streamSize    The stream size.
+     * @param uploadTypeClass The upload type class.
      */
-    public ChunkedUploadProvider(final UploadSession uploadSession, final IOneDriveClient client, final InputStream inputStream, final int streamSize) {
+    public ChunkedUploadProvider(final UploadSession uploadSession,
+                                 final IOneDriveClient client,
+                                 final InputStream inputStream,
+                                 final int streamSize,
+                                 final Class<UploadType> uploadTypeClass) {
         if (uploadSession == null) {
             throw new InvalidParameterException("Upload session is null.");
         }
@@ -110,19 +125,33 @@ public class ChunkedUploadProvider {
         this.mInputStream = inputStream;
         this.mStreamSize = streamSize;
         this.mUploadUrl = uploadSession.uploadUrl;
+        this.mResponseHandler = new ChunkedUploadResponseHandler(uploadTypeClass);
     }
 
     /**
      * Upload content to remote upload session based on the input stream.
-     * @param options The upload options.
+     *
+     * @param options  The upload options.
      * @param callback The progress callback invoked during uploading.
-     * @param configs The optional ocnfigs for the upload options, [0] should be the customized chunk
-     *                size and the [1] should be the maxRetry for upload retry.
-     * @throws IOException
+     * @param configs  The optional ocnfigs for the upload options, [0] should be the customized chunk
+     *                 size and the [1] should be the maxRetry for upload retry.
+     * @throws IOException The io exception happend during upload.
      */
-    public void upload(final List<Option> options, final IProgressCallback<Item> callback, final int... configs) throws IOException {
-        final int chunkSize = configs.length > 0 ? configs[0] : DEFAULT_CHUNK_SIZE;
-        final int maxRetry = configs.length > 1 ? configs[1] : MAXIMUM_RETRY_TIMES;
+    public void upload(final List<Option> options,
+                       final IProgressCallback<UploadType> callback,
+                       final int... configs)
+            throws IOException {
+        int chunkSize = DEFAULT_CHUNK_SIZE;
+
+        if (configs.length > 0) {
+            chunkSize = configs[0];
+        }
+
+        int maxRetry = MAXIMUM_RETRY_TIMES;
+
+        if (configs.length > 1) {
+            maxRetry = configs[1];
+        }
 
         if (chunkSize % REQUIRED_CHUNK_SIZE_INCREMENT != 0) {
             throw new IllegalArgumentException("Chunk size must be a multiple of 320 KiB");
@@ -141,12 +170,14 @@ public class ChunkedUploadProvider {
                 break;
             }
 
-            ChunkedUploadRequest request = new ChunkedUploadRequest(this.mUploadUrl, this.mClient, options, buffer, read, maxRetry, this.mReadSoFar, this.mStreamSize);
-            ChunkedUploadResult result = request.upload();
+            ChunkedUploadRequest request =
+			    new ChunkedUploadRequest(this.mUploadUrl, this.mClient, options, buffer, read,
+                                         maxRetry, this.mReadSoFar, this.mStreamSize);
+            ChunkedUploadResult result = request.upload(this.mResponseHandler);
 
             if (result.uploadCompleted()) {
                 callback.progress(this.mStreamSize, this.mStreamSize);
-                callback.success(result.getItem());
+                callback.success((UploadType) result.getItem());
                 break;
             } else if (result.chunkCompleted()) {
                 callback.progress(this.mReadSoFar, this.mStreamSize);

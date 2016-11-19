@@ -66,4 +66,22 @@ public interface IHttpProvider {
                                    final Class<Result> resultClass,
                                    final BodyType serializable)
             throws ClientException;
+
+    /**
+     * Sends the http request.
+     * @param request The request description.
+     * @param resultClass The class of the response from the service.
+     * @param serializable The object to send to the service in the body of the request.
+     * @param handler The handler for stateful response.
+     * @param <Result> The expected return type return.
+     * @param <BodyType> The type of the object to send to the service in the body of the request.
+     * @param <DeserializeType> The type of the http response object.
+     * @return The expected result object for the request.
+     * @throws ClientException This exception occurs if the request was unable to complete for any reason.
+     */
+    <Result, BodyType, DeserializeType> Result send(final IHttpRequest request,
+                                                final Class<Result> resultClass,
+                                                final BodyType serializable,
+                                                final IStatefulResponseHandler<Result, DeserializeType> handler)
+            throws ClientException;
 }
