@@ -23,6 +23,7 @@
 package com.onedrive.sdk.http;
 
 import com.onedrive.sdk.concurrency.AsyncMonitorLocation;
+import com.onedrive.sdk.concurrency.AsyncMonitorResponseHandler;
 import com.onedrive.sdk.concurrency.ChunkedUploadResponseHandler;
 import com.onedrive.sdk.concurrency.IProgressCallback;
 import com.onedrive.sdk.concurrency.MockExecutors;
@@ -80,7 +81,7 @@ public class DefaultHttpProviderTests extends AndroidTestCase {
         setDefaultHttpProvider(new AsyncOperationStatus());
         mProvider.setConnectionFactory(new MockSingleConnectionFactory(new TestDataConnection(data)));
 
-        AsyncOperationStatus response = mProvider.send(new MockRequest(), AsyncOperationStatus.class, null);
+        AsyncOperationStatus response = mProvider.send(new MockRequest(), AsyncOperationStatus.class, null, new AsyncMonitorResponseHandler());
 
         assertEquals(expectedLocation, response.seeOther);
         assertEquals(1, mInterceptor.getInterceptionCount());
@@ -109,7 +110,7 @@ public class DefaultHttpProviderTests extends AndroidTestCase {
         setDefaultHttpProvider(new AsyncOperationStatus());
         mProvider.setConnectionFactory(new MockSingleConnectionFactory(new TestDataConnection(data)));
 
-        AsyncOperationStatus response = mProvider.send(new MockRequest(), AsyncOperationStatus.class, null);
+        AsyncOperationStatus response = mProvider.send(new MockRequest(), AsyncOperationStatus.class, null, new AsyncMonitorResponseHandler());
 
         assertEquals(expectedLocation, response.seeOther);
         assertEquals("Completed", response.status);
@@ -454,7 +455,7 @@ public class DefaultHttpProviderTests extends AndroidTestCase {
         ChunkedUploadResult result = mProvider.send(new MockRequest(), ChunkedUploadResult.class, chunk, handler);
 
         assertTrue(result.uploadCompleted());
-        assertEquals(result.getSession(), toSerialize);
+        assertEquals(toSerialize, result.getItem());
     }
 
     public void testUploadReturnError() throws  Exception {
