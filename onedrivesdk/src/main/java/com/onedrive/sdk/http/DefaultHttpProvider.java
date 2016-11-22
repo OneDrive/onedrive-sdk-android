@@ -28,7 +28,6 @@ import com.onedrive.sdk.concurrency.IExecutors;
 import com.onedrive.sdk.concurrency.IProgressCallback;
 import com.onedrive.sdk.core.ClientException;
 import com.onedrive.sdk.core.OneDriveErrorCodes;
-import com.onedrive.sdk.extensions.AsyncOperationStatus;
 import com.onedrive.sdk.logger.ILogger;
 import com.onedrive.sdk.logger.LoggerLevel;
 import com.onedrive.sdk.serializer.ISerializer;
@@ -138,7 +137,8 @@ public class DefaultHttpProvider implements IHttpProvider {
                     mExecutors.performOnForeground(sendRequestInternal(request,
                             resultClass,
                             serializable,
-                            progressCallback),
+                            progressCallback,
+                            null),
                             callback);
                 } catch (final ClientException e) {
                     mExecutors.performOnForeground(e, callback);
@@ -162,7 +162,26 @@ public class DefaultHttpProvider implements IHttpProvider {
                                       final Class<Result> resultClass,
                                       final Body serializable)
             throws ClientException {
-        return sendRequestInternal(request, resultClass, serializable, null);
+        return send(request, resultClass, serializable, null);
+    }
+
+    /**
+     * Sends the http request.
+     * @param request The request description.
+     * @param resultClass The class of the response from the service.
+     * @param serializable The object to send to the service in the body of the request.
+     * @param handler The handler for stateful response.
+     * @param <Result> The type of the response object.
+     * @param <Body> The type of the object to send to the service in the body of the request.
+     * @param <DeserializeType> The response handler for stateful response.
+     * @return The result from the request.
+     * @throws ClientException This exception occurs if the request was unable to complete for any reason.
+     */
+    public <Result, Body, DeserializeType> Result send(final IHttpRequest request,
+                               final Class<Result> resultClass,
+                               final Body serializable,
+                               final IStatefulResponseHandler<Result, DeserializeType> handler) throws ClientException {
+        return sendRequestInternal(request, resultClass, serializable, null, handler);
     }
 
     /**
@@ -171,24 +190,22 @@ public class DefaultHttpProvider implements IHttpProvider {
      * @param resultClass The class of the response from the service.
      * @param serializable The object to send to the service in the body of the request.
      * @param progress The progress callback for the request.
+     * @param handler The handler for stateful response.
      * @param <Result> The type of the response object.
      * @param <Body> The type of the object to send to the service in the body of the request.
+     * @param <DeserializeType> The response handler for stateful response.
      * @return The result from the request.
      * @throws ClientException An exception occurs if the request was unable to complete for any reason.
      */
-    private <Result, Body> Result sendRequestInternal(final IHttpRequest request,
+    private <Result, Body, DeserializeType> Result sendRequestInternal(final IHttpRequest request,
                                                       final Class<Result> resultClass,
                                                       final Body serializable,
-                                                      final IProgressCallback<Result> progress)
+                                                      final IProgressCallback<Result> progress,
+                                                      final IStatefulResponseHandler<Result, DeserializeType> handler)
             throws ClientException {
         final int defaultBufferSize = 4096;
         final String contentLengthHeaderName = "Content-Length";
         final String binaryContentType = "application/octet-stream";
-        final int httpClientErrorResponseCode = 400;
-        final int httpNoBodyResponseCode = 204;
-        final int httpAcceptedResponseCode = 202;
-        final int httpSeeOtherResponseCode = 303;
-        final int httpNotModified = 304;
 
         try {
             if (mRequestInterceptor != null) {
@@ -204,7 +221,6 @@ public class DefaultHttpProvider implements IHttpProvider {
 
             try {
                 mLogger.logDebug("Request Method " + request.getHttpMethod().toString());
-                connection.setFollowRedirects(!(isAsyncOperation(resultClass)));
 
                 final byte[] bytesToWrite;
                 if (serializable == null) {
@@ -242,40 +258,38 @@ public class DefaultHttpProvider implements IHttpProvider {
                     bos.close();
                 }
 
+                if (handler != null) {
+                    handler.configConnection(connection);
+                }
+
                 mLogger.logDebug(String.format("Response code %d, %s",
                         connection.getResponseCode(),
                         connection.getResponseMessage()));
-                if (connection.getResponseCode() >= httpClientErrorResponseCode
-                        && !isAsyncOperation(resultClass)) {
+
+                if (handler != null) {
+                    mLogger.logDebug("StatefulResponse is handling the HTTP response.");
+                    return handler.generateResult(
+                            request, connection, this.getSerializer(), this.mLogger);
+                }
+
+                if (connection.getResponseCode() >= HttpResponseCode.HTTP_CLIENT_ERROR) {
                     mLogger.logDebug("Handling error response");
                     in = connection.getInputStream();
                     handleErrorResponse(request, serializable, connection);
                 }
 
-                if (connection.getResponseCode() == httpNoBodyResponseCode
-                        || connection.getResponseCode() == httpNotModified) {
+                if (connection.getResponseCode() == HttpResponseCode.HTTP_NOBODY
+                        || connection.getResponseCode() == HttpResponseCode.HTTP_NOT_MODIFIED) {
                     mLogger.logDebug("Handling response with no body");
                     return null;
                 }
 
-                if (connection.getResponseCode() == httpAcceptedResponseCode) {
+                if (connection.getResponseCode() == HttpResponseCode.HTTP_ACCEPTED) {
                     mLogger.logDebug("Handling accepted response");
                     if (resultClass == AsyncMonitorLocation.class) {
                         //noinspection unchecked
                         return (Result) new AsyncMonitorLocation(connection.getHeaders().get("Location"));
                     }
-                }
-
-                if (isAsyncOperation(resultClass)) {
-                    mLogger.logDebug("Use different rules for processing async operations");
-                    if (connection.getResponseCode() == httpSeeOtherResponseCode) {
-                        //noinspection unchecked
-                        return (Result) AsyncOperationStatus.createdCompleted(connection.getHeaders().get("Location"));
-                    }
-                    in = new BufferedInputStream(connection.getInputStream());
-                    final Result result = handleJsonResponse(in, resultClass);
-                    ((AsyncOperationStatus) result).seeOther = connection.getHeaders().get("Location");
-                    return result;
                 }
 
                 in = new BufferedInputStream(connection.getInputStream());
@@ -312,16 +326,6 @@ public class DefaultHttpProvider implements IHttpProvider {
             mLogger.logError("Error during http request", clientException);
             throw clientException;
         }
-    }
-
-    /**
-     * Checks if the given class is an async operation.
-     *
-     * @param resultClass The class to check.
-     * @return true if the class is an async operation.
-     */
-    private boolean isAsyncOperation(final Class resultClass) {
-        return resultClass == AsyncOperationStatus.class;
     }
 
     /**
