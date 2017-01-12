@@ -10,6 +10,7 @@ The examples in this topic all use a previously created `oneDriveClient` object.
 * [Move an item](#move-an-item)
 * [Rename an item](#rename-an-item)
 * [Copy an item](#copy-an-item)
+* [Upload a large file](#upload-a-large-file)
 
 ## Get an item
 
@@ -289,4 +290,85 @@ final IProgressCallback<Item> callback = new IProgressCallback<Item>() {
 asyncMonitor
     .pollForResult(millisBetweenPoll, callback);
 
+```
+
+## Upload a large file
+
+Uploading a large file to OneDrive needs create upload session and uploading bytes to the session url.
+
+#### Make create session request
+
+You create a create session request for an item by constructing request builders `getDrive`, `getRoot`, `getItemWithPath`, `getCreateSession`, `buildRequest` on the item, and then calling `post` to start the create session request. The response is an upload session object which you call `createUploadProvider` of the object to create an upload provider which handles large file uploading.
+
+#### Parameters
+
+|Name|Description|
+|----|-----------|
+|_itemPath_|The path to the file.|
+|_chunkedUploadSessionDescriptor_| The chunked upload session descriptor.|
+|_oneDriveClient_|The one drive client.|
+|_fileStream_|The input file stream.|
+|_fileSize_|The size of the file.|
+|_uploadType_|The upload class type.|
+|_uploadOptions_|The upload options.|
+|_callback_|The upload callback.|
+|_chunkSize_|The chunk size for each upload chunk, default is 5MiB.|
+|_maxRetry_| The max retry times for each upload chunk, default is 3.|
+
+
+#### Example
+
+```java
+final String itemPath = "documents/file to copy.txt";
+final Option uploadOptions = new QueryOption("@name.conflictBehavior", "fail");
+final int chunkSize = 640 * 1024; //must be the multiple of 320KiB
+final int maxRetry = 5;
+
+final IProgressCallback<Item> callback = new IProgressCallback<Item>() {
+    @Override
+    public void progress(long current, long max) {
+        dialog.setProgress((int) current);
+        dialog.setMax((int) max);
+
+    }
+
+    @Override
+    public void success(Item item) {dialog.dismiss();
+        Toast.makeText(getActivity(),
+                application
+                        .getString(R.string.upload_complete,
+                                item.name),
+                Toast.LENGTH_LONG).show();
+        refresh();
+    }
+
+    @Override
+    public void failure(ClientException error) {
+        dialog.dismiss();
+        if (error.isError(OneDriveErrorCodes.NameAlreadyExists)) {
+            Toast.makeText(getActivity(),
+                    R.string.upload_failed_name_conflict,
+                    Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(getActivity(),
+                    application
+                            .getString(R.string.upload_failed,
+                                    filename),
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+}
+
+oneDriveClient
+    .getDrive()
+    .getRoot()
+    .getItemWithPath(itemPath)
+    .getCreateSession(new ChunkedUploadSessionDescriptor())
+    .buildRequest()
+    .post()
+    .createUploadProvider(oneDriveClient, fileStream, fileSize, Item.class)
+    .upload(Collections.singletonList(uploadOptions),
+            callback,
+            chunkSize,
+            maxRetry);
 ```
