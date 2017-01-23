@@ -77,10 +77,22 @@ Once you have set the correct application Id and scopes, you must get a **OneDri
 final IClientConfig oneDriveConfig = DefaultClientConfig.createWithAuthenticators(
                                             msaAuthenticator,
                                             adalAuthenticator);
+                                            
+final DefaultCallback<IOneDriveClient> callback = new DefaultCallback<IOneDriveClient>(activity) {
+            @Override
+            public void success(final IOneDriveClient result) {
+                // OneDrive client created successfully.
+            }
 
+            @Override
+            public void failure(final ClientException error) {
+                // Exception happened during creation.
+            }
+        };
+        
 final IOneDriveClient oneDriveClient = new OneDriveClient.Builder()
                                             .fromConfig(oneDriveConfig)
-                                            .loginAndBuildClient(getActivity());
+                                            .loginAndBuildClient(getActivity(), callback);
 
 ```
 
