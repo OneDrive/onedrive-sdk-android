@@ -1,5 +1,9 @@
-<manifest package="com.microsoft.onedrivesdk" xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest
+    package="com.microsoft.onedrivesdk"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-sdk tools:overrideLibrary="com.microsoft.services.msa, com.microsoft.aad.adal" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
