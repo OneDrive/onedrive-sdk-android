@@ -83,6 +83,15 @@ public class MSAAccountInfo implements IAccountInfo {
     }
 
     /**
+     * Gets the refresh token for requests against the service root.
+     * @return The refresh token for requests against the service root.
+     */
+    @Override
+    public String getRefreshToken() {
+        return mSession.getRefreshToken();
+    }
+
+    /**
      * Get the OneDrive service root for this account.
      * @return the OneDrive service root for this account.
      */

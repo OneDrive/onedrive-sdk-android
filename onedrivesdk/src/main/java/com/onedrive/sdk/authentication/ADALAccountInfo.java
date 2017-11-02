@@ -86,6 +86,15 @@ public class ADALAccountInfo implements IAccountInfo {
     }
 
     /**
+     * Gets the refresh token for requests against the service root.
+     * @return The refresh token for requests against the service root.
+     */
+    @Override
+    public String getRefreshToken() {
+        return mAuthenticationResult.getRefreshToken();
+    }
+
+    /**
      * Get the OneDrive service root for this account.
      * @return The OneDrive service root for this account.
      */
