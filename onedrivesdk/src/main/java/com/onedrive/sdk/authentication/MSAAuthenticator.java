@@ -25,6 +25,8 @@ package com.onedrive.sdk.authentication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 
 import com.microsoft.onedrivesdk.BuildConfig;
 import com.microsoft.services.msa.LiveAuthClient;
@@ -92,9 +94,9 @@ public abstract class MSAAuthenticator implements IAuthenticator {
     private boolean mInitialized;
 
     /**
-     * The context UI interactions should happen with.
+     * The context to initialize components with.
      */
-    private Activity mActivity;
+    private Context mContext;
 
     /**
      * The logger.
@@ -124,23 +126,23 @@ public abstract class MSAAuthenticator implements IAuthenticator {
      * Initializes the authenticator.
      * @param executors The executors to schedule foreground and background tasks.
      * @param httpProvider The http provider for sending requests.
-     * @param activity The activity to create interactive UI on.
+     * @param context The context to initialize components with.
      * @param logger The logger for diagnostic information.
      */
     @Override
     public synchronized void init(final IExecutors executors,
                      final IHttpProvider httpProvider,
-                     final Activity activity,
+                     final Context context,
                      final ILogger logger) {
         if (mInitialized) {
             return;
         }
 
         mExecutors = executors;
-        mActivity = activity;
+        mContext = context;
         mLogger = logger;
         mInitialized = true;
-        mAuthClient = new LiveAuthClient(activity, getClientId(), Arrays.asList(getScopes()));
+        mAuthClient = new LiveAuthClient(context, getClientId(), Arrays.asList(getScopes()));
 
         final SharedPreferences prefs = getSharedPreferences();
         mUserId.set(prefs.getString(USER_ID_KEY, null));
@@ -148,11 +150,12 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
     /**
      * Starts an interactive login asynchronously.
+     * @param activity The activity to create interactive UI on.
      * @param emailAddressHint The hint for the email address during the interactive login.
      * @param loginCallback The callback to be called when the login is complete.
      */
     @Override
-    public void login(final String emailAddressHint, final ICallback<IAccountInfo> loginCallback) {
+    public void login(final Activity activity, final String emailAddressHint, final ICallback<IAccountInfo> loginCallback) {
         if (!mInitialized) {
             throw new IllegalStateException("init must be called");
         }
@@ -167,7 +170,7 @@ public abstract class MSAAuthenticator implements IAuthenticator {
             @Override
             public void run() {
                 try {
-                    mExecutors.performOnForeground(login(emailAddressHint), loginCallback);
+                    mExecutors.performOnForeground(login(activity, emailAddressHint), loginCallback);
                 } catch (final ClientException e) {
                     mExecutors.performOnForeground(e, loginCallback);
                 }
@@ -177,12 +180,13 @@ public abstract class MSAAuthenticator implements IAuthenticator {
 
     /**
      * Starts an interactive login.
+     * @param activity The activity to create interactive UI on.
      * @param emailAddressHint The hint for the email address during the interactive login.
      * @return The account info.
      * @throws ClientException An exception occurs if the login was unable to complete for any reason.
      */
     @Override
-    public synchronized IAccountInfo login(final String emailAddressHint) throws ClientException {
+    public synchronized IAccountInfo login(final Activity activity, final String emailAddressHint) throws ClientException {
         if (!mInitialized) {
             throw new IllegalStateException("init must be called");
         }
@@ -219,10 +223,10 @@ public abstract class MSAAuthenticator implements IAuthenticator {
             }
         };
 
-        mActivity.runOnUiThread(new Runnable() {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {
-                mAuthClient.login(mActivity, /* scopes */null, /* user object */ null, emailAddressHint, listener);
+                mAuthClient.login(activity, /* scopes */null, /* user object */ null, emailAddressHint, listener);
             }
         });
 
@@ -445,7 +449,7 @@ public abstract class MSAAuthenticator implements IAuthenticator {
      * @return The shared preferences.
      */
     private SharedPreferences getSharedPreferences() {
-        return mActivity.getSharedPreferences(MSA_AUTHENTICATOR_PREFS, Context.MODE_PRIVATE);
+        return mContext.getSharedPreferences(MSA_AUTHENTICATOR_PREFS, Context.MODE_PRIVATE);
     }
 
 }

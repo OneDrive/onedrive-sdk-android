@@ -80,9 +80,9 @@ public class DisambiguationAuthenticator implements IAuthenticator {
     private IExecutors mExecutors;
 
     /**
-     * The context UI interactions should happen with.
+     * The context to initialize components with.
      */
-    private Activity mActivity;
+    private Context mContext;
 
     /**
      * Indicates if this authenticator has been initialized.
@@ -110,34 +110,35 @@ public class DisambiguationAuthenticator implements IAuthenticator {
      * Initializes the authenticator.
      * @param executors The executors to schedule foreground and background tasks.
      * @param httpProvider The http provider for sending requests.
-     * @param activity The activity to create interactive UI on.
+     * @param context The context to initialize components with.
      * @param logger The logger for diagnostic information.
      */
     @Override
     public synchronized void init(final IExecutors executors,
                                   final IHttpProvider httpProvider,
-                                  final Activity activity,
+                                  final Context context,
                                   final ILogger logger) {
         if (mInitialized) {
             return;
         }
 
         mExecutors = executors;
-        mActivity = activity;
+        mContext = context;
         mLogger = logger;
         mLogger.logDebug("Initializing MSA and ADAL authenticators");
-        mMSAAuthenticator.init(executors, httpProvider, activity, logger);
-        mADALAuthenticator.init(executors, httpProvider, activity, logger);
+        mMSAAuthenticator.init(executors, httpProvider, context, logger);
+        mADALAuthenticator.init(executors, httpProvider, context, logger);
         mInitialized = true;
     }
 
     /**
      * Starts an interactive login asynchronously.
+     * @param activity The activity to create interactive UI on.
      * @param emailAddressHint The hint for the email address during the interactive login.
      * @param loginCallback The callback to be called when the login is complete.
      */
     @Override
-    public void login(final String emailAddressHint, final ICallback<IAccountInfo> loginCallback) {
+    public void login(final Activity activity, final String emailAddressHint, final ICallback<IAccountInfo> loginCallback) {
         if (!mInitialized) {
             throw new IllegalStateException("init must be called");
         }
@@ -152,7 +153,7 @@ public class DisambiguationAuthenticator implements IAuthenticator {
             @Override
             public void run() {
                 try {
-                    mExecutors.performOnForeground(login(emailAddressHint), loginCallback);
+                    mExecutors.performOnForeground(login(activity, emailAddressHint), loginCallback);
                 } catch (final ClientException e) {
                     mExecutors.performOnForeground(e, loginCallback);
                 }
@@ -162,12 +163,13 @@ public class DisambiguationAuthenticator implements IAuthenticator {
 
     /**
      * Starts an interactive login.
+     * @param activity The activity to create interactive UI on.
      * @param emailAddressHint The hint for the email address during the interactive login.
      * @return The account info.
      * @throws ClientException If the login was unable to complete for any reason.
      */
     @Override
-    public synchronized IAccountInfo login(final String emailAddressHint) throws ClientException {
+    public synchronized IAccountInfo login(final Activity activity, final String emailAddressHint) throws ClientException {
         mLogger.logDebug("Starting login");
         final SimpleWaiter disambiguationWaiter = new SimpleWaiter();
         final AtomicReference<DisambiguationResponse> response = new AtomicReference<>();
@@ -198,7 +200,7 @@ public class DisambiguationAuthenticator implements IAuthenticator {
             mLogger.logDebug(String.format("Found saved account information %s type of account", accountType));
         } else {
             mLogger.logDebug("Creating disambiguation ui, waiting for user to sign in");
-            new DisambiguationRequest(mActivity, disambiguationCallback, mLogger).execute();
+            new DisambiguationRequest(activity, disambiguationCallback, mLogger).execute();
             disambiguationWaiter.waitForSignal();
 
             //noinspection ThrowableResultOfMethodCallIgnored
@@ -213,10 +215,10 @@ public class DisambiguationAuthenticator implements IAuthenticator {
         final IAccountInfo accountInfo;
         switch (accountType) {
             case ActiveDirectory:
-                accountInfo = mADALAuthenticator.login(accountName);
+                accountInfo = mADALAuthenticator.login(activity, accountName);
                 break;
             case MicrosoftAccount:
-                accountInfo = mMSAAuthenticator.login(accountName);
+                accountInfo = mMSAAuthenticator.login(activity, accountName);
                 break;
             default:
                 final UnsupportedOperationException unsupportedOperationException
@@ -361,7 +363,7 @@ public class DisambiguationAuthenticator implements IAuthenticator {
      * @return The shared preferences.
      */
     private SharedPreferences getSharedPreferences() {
-        return mActivity.getSharedPreferences(DISAMBIGUATION_AUTHENTICATOR_PREFS, Context.MODE_PRIVATE);
+        return mContext.getSharedPreferences(DISAMBIGUATION_AUTHENTICATOR_PREFS, Context.MODE_PRIVATE);
     }
 
     /**
