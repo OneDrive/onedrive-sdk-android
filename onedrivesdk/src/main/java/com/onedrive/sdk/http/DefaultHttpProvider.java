@@ -34,6 +34,7 @@ import com.onedrive.sdk.serializer.ISerializer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -222,14 +223,19 @@ public class DefaultHttpProvider implements IHttpProvider {
             try {
                 mLogger.logDebug("Request Method " + request.getHttpMethod().toString());
 
-                final byte[] bytesToWrite;
+                InputStream body = null;
+                byte[] bytesToWrite = null;
                 if (serializable == null) {
-                    bytesToWrite = null;
+                    body = null;
                 } else if (serializable instanceof byte[]) {
                     mLogger.logDebug("Sending byte[] as request body");
                     bytesToWrite = (byte[]) serializable;
                     connection.addRequestHeader(CONTENT_TYPE_HEADER_NAME, binaryContentType);
                     connection.setContentLength(bytesToWrite.length);
+                } else if (serializable instanceof InputStream) {
+                    mLogger.logDebug("Using InputStream as request body");
+                    body = (InputStream) serializable;
+                    connection.addRequestHeader(CONTENT_TYPE_HEADER_NAME, binaryContentType);
                 } else {
                     mLogger.logDebug("Sending " + serializable.getClass().getName() + " as request body");
                     final String serializeObject = mSerializer.serializeObject(serializable);
@@ -238,23 +244,25 @@ public class DefaultHttpProvider implements IHttpProvider {
                     connection.setContentLength(bytesToWrite.length);
                 }
 
+                if (body == null && bytesToWrite != null) {
+                    body = new ByteArrayInputStream(bytesToWrite);
+                }
+
                 // Handle cases where we've got a body to process.
-                if (bytesToWrite != null) {
+                if (body != null) {
                     out = connection.getOutputStream();
 
                     int writtenSoFar = 0;
+                    int toWrite;
+                    byte[] buffer = new byte[defaultBufferSize];
                     BufferedOutputStream bos = new BufferedOutputStream(out);
 
-                    int toWrite;
-                    do {
-                        toWrite = Math.min(defaultBufferSize, bytesToWrite.length - writtenSoFar);
-                        bos.write(bytesToWrite, writtenSoFar, toWrite);
-                        writtenSoFar = writtenSoFar + toWrite;
+                    while ((toWrite = body.read(buffer)) != -1) {
+                        bos.write(buffer, writtenSoFar, toWrite);
                         if (progress != null) {
-                            mExecutors.performOnForeground(writtenSoFar, bytesToWrite.length,
-                                    progress);
+                            mExecutors.performOnForeground(writtenSoFar, buffer.length, progress);
                         }
-                    } while (toWrite > 0);
+                    }
                     bos.close();
                 }
 
