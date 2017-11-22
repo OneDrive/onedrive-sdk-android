@@ -40,6 +40,12 @@ public interface IAccountInfo {
     String getAccessToken();
 
     /**
+     * Gets the refresh token for requests against the service root.
+     * @return The refresh token for requests against the service root.
+     */
+    String getRefreshToken();
+
+    /**
      * Gets the OneDrive service root for this account.
      * @return The OneDrive service root for this account.
      */

@@ -67,4 +67,14 @@ public class BaseItemStreamRequest extends BaseStreamRequest<Item> implements IB
     public Item put(final byte[] fileContents) throws ClientException {
         return send(fileContents);
     }
+
+    @Override
+    public void put(InputStream fileContents, ICallback<Item> callback) {
+        send(fileContents, callback);
+    }
+
+    @Override
+    public Item put(InputStream fileContents) throws ClientException {
+        return send(fileContents);
+    }
 }

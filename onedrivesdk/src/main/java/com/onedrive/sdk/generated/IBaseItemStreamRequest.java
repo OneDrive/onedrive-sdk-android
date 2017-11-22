@@ -48,4 +48,8 @@ public interface IBaseItemStreamRequest extends IHttpStreamRequest {
     void put(final byte[] fileContents, final ICallback<Item> callback);
 
     Item put(final byte[] fileContents) throws ClientException;
+
+    void put(final InputStream fileContents, final ICallback<Item> callback);
+
+    Item put(final InputStream fileContents) throws ClientException;
 }

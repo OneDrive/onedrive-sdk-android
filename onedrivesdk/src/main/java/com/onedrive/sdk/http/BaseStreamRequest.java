@@ -89,6 +89,17 @@ public abstract class BaseStreamRequest<T> implements IHttpStreamRequest {
 
     /**
      * Sends this request.
+     * @param fileStream The file to upload.
+     * @param callback The callback when this request complements. The caller needs to close the stream.
+     */
+    @SuppressWarnings("unchecked")
+    protected void send(final InputStream fileStream, final ICallback<T> callback) {
+        mBaseRequest.setHttpMethod(HttpMethod.PUT);
+        mBaseRequest.getClient().getHttpProvider().send(this, callback, mBaseRequest.getResponseType(), fileStream);
+    }
+
+    /**
+     * Sends this request.
      * @param fileContents The file to upload.
      * @return The stream that the caller needs to close.
      */
@@ -96,6 +107,17 @@ public abstract class BaseStreamRequest<T> implements IHttpStreamRequest {
     protected T send(final byte[] fileContents) {
         mBaseRequest.setHttpMethod(HttpMethod.PUT);
         return (T) mBaseRequest.getClient().getHttpProvider().send(this, mBaseRequest.getResponseType(), fileContents);
+    }
+
+    /**
+     * Sends this request.
+     * @param fileStream The file to upload.
+     * @return The stream that the caller needs to close.
+     */
+    @SuppressWarnings("unchecked")
+    protected T send(final InputStream fileStream) {
+        mBaseRequest.setHttpMethod(HttpMethod.PUT);
+        return (T) mBaseRequest.getClient().getHttpProvider().send(this, mBaseRequest.getResponseType(), fileStream);
     }
 
     /**

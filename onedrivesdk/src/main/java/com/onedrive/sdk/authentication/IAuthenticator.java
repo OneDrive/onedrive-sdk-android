@@ -23,6 +23,7 @@
 package com.onedrive.sdk.authentication;
 
 import android.app.Activity;
+import android.content.Context;
 
 import com.onedrive.sdk.concurrency.ICallback;
 import com.onedrive.sdk.concurrency.IExecutors;
@@ -45,28 +46,30 @@ public interface IAuthenticator {
      * Initializes the authenticator.
      * @param executors The executors to schedule foreground and background tasks.
      * @param httpProvider The http provider for sending requests.
-     * @param activity The activity to create interactive UI on.
+     * @param context The context to initialize components with.
      * @param logger The logger for diagnostic information.
      */
     void init(final IExecutors executors,
               final IHttpProvider httpProvider,
-              final Activity activity,
+              final Context context,
               final ILogger logger);
 
     /**
      * Starts an interactive login asynchronously.
+     * @param activity The activity to create interactive UI on.
      * @param emailAddressHint The hint for the email address during the interactive login.
      * @param loginCallback The callback to be called when the login is complete.
      */
-    void login(final String emailAddressHint, final ICallback<IAccountInfo> loginCallback);
+    void login(final Activity activity, final String emailAddressHint, final ICallback<IAccountInfo> loginCallback);
 
     /**
      * Starts an interactive login.
+     * @param activity The activity to create interactive UI on.
      * @param emailAddressHint The hint for the email address during the interactive login.
      * @return The account info.
      * @throws ClientException An exception occurs if the login was unable to complete for any reason.
      */
-    IAccountInfo login(final String emailAddressHint) throws ClientException;
+    IAccountInfo login(final Activity activity, final String emailAddressHint) throws ClientException;
 
     /**
      * Starts a silent login asynchronously.

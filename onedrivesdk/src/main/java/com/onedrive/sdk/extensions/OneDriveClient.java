@@ -24,17 +24,14 @@ package com.onedrive.sdk.extensions;
 
 import com.onedrive.sdk.concurrency.*;
 import com.onedrive.sdk.core.*;
-import com.onedrive.sdk.extensions.*;
 import com.onedrive.sdk.http.*;
 import com.onedrive.sdk.generated.*;
-import com.onedrive.sdk.options.*;
 import com.onedrive.sdk.serializer.*;
-
-import java.util.*;
 
 import com.onedrive.sdk.authentication.*;
 import com.onedrive.sdk.logger.*;
 import android.app.Activity;
+import android.content.Context;
 
 // This file is available for extending, afterwards please submit a pull request.
 
@@ -153,6 +150,27 @@ public class OneDriveClient extends BaseOneDriveClient implements IOneDriveClien
         }
 
         /**
+         * Login a user and then returns the OneDriveClient asynchronously
+         * @param context The context to initialize components with.
+         * @param callback The callback when the client has been built
+         */
+        public void loginSilentAndBuildClient(final Context context, final ICallback<IOneDriveClient> callback) {
+            mClient.validate();
+
+            mClient.getExecutors().performOnBackground(new Runnable() {
+                @Override
+                public void run() {
+                    final IExecutors executors = mClient.getExecutors();
+                    try {
+                        executors.performOnForeground(loginSilentAndBuildClient(context), callback);
+                    } catch (final ClientException e) {
+                        executors.performOnForeground(e, callback);
+                    }
+                }
+            });
+        }
+
+        /**
          * Login a user and then returns the OneDriveClient
          * @param activity The activity the UI should be from
          * @throws ClientException if there was an exception creating the client
@@ -161,7 +179,7 @@ public class OneDriveClient extends BaseOneDriveClient implements IOneDriveClien
             mClient.validate();
 
             mClient.getAuthenticator()
-                .init(mClient.getExecutors(), mClient.getHttpProvider(), activity, mClient.getLogger());
+                .init(mClient.getExecutors(), mClient.getHttpProvider(), activity.getApplicationContext(), mClient.getLogger());
 
             IAccountInfo silentAccountInfo = null;
             try {
@@ -170,9 +188,34 @@ public class OneDriveClient extends BaseOneDriveClient implements IOneDriveClien
             }
 
             if (silentAccountInfo == null
-                && mClient.getAuthenticator().login(null) == null) {
+                && mClient.getAuthenticator().login(activity, null) == null) {
                 throw new ClientAuthenticatorException("Unable to authenticate silently or interactively",
                                                        OneDriveErrorCodes.AuthenticationFailure);
+            }
+
+            return mClient;
+        }
+
+        /**
+         * Login a user and then returns the OneDriveClient
+         * @param context The context to initialize components with.
+         * @throws ClientException if there was an exception creating the client
+         */
+        private IOneDriveClient loginSilentAndBuildClient(final Context context) throws ClientException {
+            mClient.validate();
+
+            mClient.getAuthenticator()
+                    .init(mClient.getExecutors(), mClient.getHttpProvider(), context, mClient.getLogger());
+
+            IAccountInfo silentAccountInfo = null;
+            try {
+                silentAccountInfo = mClient.getAuthenticator().loginSilent();
+            } catch (final Exception ignored) {
+            }
+
+            if (silentAccountInfo == null) {
+                throw new ClientAuthenticatorException("Unable to authenticate silently",
+                        OneDriveErrorCodes.AuthenticationFailure);
             }
 
             return mClient;

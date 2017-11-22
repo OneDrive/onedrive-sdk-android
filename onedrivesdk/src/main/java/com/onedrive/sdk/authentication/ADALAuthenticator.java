@@ -133,9 +133,9 @@ public abstract class ADALAuthenticator implements IAuthenticator {
     private boolean mInitialized;
 
     /**
-     * The context UI, with which interactions should happen.
+     * The context to initialize components with.
      */
-    private Activity mActivity;
+    private Context mContext;
 
     /**
      * The http provider.
@@ -182,13 +182,13 @@ public abstract class ADALAuthenticator implements IAuthenticator {
      * Initializes the authenticator.
      * @param executors The executors to schedule foreground and background tasks.
      * @param httpProvider The http provider for sending requests.
-     * @param activity The activity to create interactive UI on.
+     * @param context The context to initialize components with.
      * @param logger The logger for diagnostic information.
      */
     @Override
     public synchronized void init(final IExecutors executors,
                                   final IHttpProvider httpProvider,
-                                  final Activity activity,
+                                  final Context context,
                                   final ILogger logger) {
         if (mInitialized) {
             return;
@@ -196,14 +196,14 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
         mExecutors = executors;
         mHttpProvider = httpProvider;
-        mActivity = activity;
+        mContext = context;
         mLogger = logger;
 
-        final BrokerPermissionsChecker brokerPermissionsChecker = new BrokerPermissionsChecker(mActivity, mLogger);
+        final BrokerPermissionsChecker brokerPermissionsChecker = new BrokerPermissionsChecker(mContext, mLogger);
         brokerPermissionsChecker.check();
 
         try {
-            mAdalContext = new AuthenticationContext(activity,
+            mAdalContext = new AuthenticationContext(context,
                                                     LOGIN_AUTHORITY,
                                                     VALIDATE_AUTHORITY);
         } catch (final NoSuchAlgorithmException | NoSuchPaddingException e) {
@@ -245,11 +245,12 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
     /**
      * Starts an interactive login asynchronously.
+     * @param activity The activity to create interactive UI on.
      * @param emailAddressHint The hint for the email address during the interactive login.
      * @param loginCallback The callback to be called when the login is complete.
      */
     @Override
-    public void login(final String emailAddressHint, final ICallback<IAccountInfo> loginCallback) {
+    public void login(final Activity activity, final String emailAddressHint, final ICallback<IAccountInfo> loginCallback) {
         if (!mInitialized) {
             throw new IllegalStateException("init must be called");
         }
@@ -264,7 +265,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
             @Override
             public void run() {
                 try {
-                    loginCallback.success(login(emailAddressHint));
+                    loginCallback.success(login(activity, emailAddressHint));
                 } catch (final ClientException e) {
                     loginCallback.failure(e);
                 }
@@ -274,12 +275,13 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
     /**
      * Starts an interactive login.
+     * @param activity The activity to create interactive UI on.
      * @param emailAddressHint The hint for the email address during the interactive login.
      * @return The account info.
      * @throws ClientException An exception occurs if the login was unable to complete for any reason.
      */
     @Override
-    public synchronized IAccountInfo login(final String emailAddressHint) throws ClientException {
+    public synchronized IAccountInfo login(final Activity activity, final String emailAddressHint) throws ClientException {
         if (!mInitialized) {
             throw new IllegalStateException("init must be called");
         }
@@ -307,7 +309,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
 
         // Request a fresh auth token for the OneDrive service.
         final AuthenticationResult oneDriveServiceAuthToken =
-                getOneDriveServiceAuthResult(oneDriveServiceInfo);
+                getOneDriveServiceAuthResult(activity, oneDriveServiceInfo);
 
         // Get the OneDrive auth token and save a reference to it.
         final String serviceInfoAsString = mHttpProvider.getSerializer()
@@ -486,7 +488,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
         mAdalContext.getCache().removeAll();
 
         mLogger.logDebug("Clearing all webview cookies");
-        CookieSyncManager.createInstance(mActivity);
+        CookieSyncManager.createInstance(mContext);
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.removeAllCookie();
         CookieSyncManager.getInstance().sync();
@@ -575,7 +577,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
      * @return The shared preferences.
      */
     private SharedPreferences getSharedPreferences() {
-        return mActivity.getSharedPreferences(ADAL_AUTHENTICATOR_PREFS, Context.MODE_PRIVATE);
+        return mContext.getSharedPreferences(ADAL_AUTHENTICATOR_PREFS, Context.MODE_PRIVATE);
     }
 
     /**
@@ -628,7 +630,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
      * @param oneDriveServiceInfo The OneDrive services info.
      * @return The authentication result for this OneDrive service.
      */
-    private AuthenticationResult getOneDriveServiceAuthResult(final ServiceInfo oneDriveServiceInfo) {
+    private AuthenticationResult getOneDriveServiceAuthResult(final Activity activity, final ServiceInfo oneDriveServiceInfo) {
         final SimpleWaiter authorityCallbackWaiter = new SimpleWaiter();
         final AtomicReference<ClientException> error = new AtomicReference<>();
         final AtomicReference<AuthenticationResult> oneDriveServiceAuthToken = new AtomicReference<>();
@@ -662,7 +664,7 @@ public abstract class ADALAuthenticator implements IAuthenticator {
             }
         };
         mLogger.logDebug("Starting OneDrive resource refresh token request");
-        mAdalContext.acquireToken(mActivity,
+        mAdalContext.acquireToken(activity,
                                   oneDriveServiceInfo.serviceResourceId,
                                   getClientId(),
                                   getRedirectUrl(),
